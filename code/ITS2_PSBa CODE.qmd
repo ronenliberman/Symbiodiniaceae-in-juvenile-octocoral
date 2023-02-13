@@ -1,5 +1,5 @@
 ---
-title: "Code for analyzing algal symbiont in juvenile R"
+title: "Quarto file Code for Making figures 1-3"
 author: "Ronen Liberman"
 format: html
 editor: visual
