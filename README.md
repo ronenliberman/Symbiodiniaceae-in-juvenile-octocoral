@@ -1,2 +1,1 @@
-# Symbiodiniaceae-in-juvenile-octocoral
-Symbiodiniaceae in juvenile R. fulvum (octocoral) across depth 
+# Symbiodiniaceae-in-juvenile-octocoral across depth. Files that are in this repository are used to analyze ITS2 NGS sequences that were analyzed using Symportal and psbA sequences that were align and used to construct phylogenetic tree using IQTREE.  
