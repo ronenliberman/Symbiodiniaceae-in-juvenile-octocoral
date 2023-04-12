@@ -1,1 +1,1 @@
-# Symbiodiniaceae-in-juvenile-octocoral across depth. Files that are in this repository are used to analyze ITS2 Illumina sequences that were analyzed using Symportal. I addition, raw psbA sequences that were used to construct phylogenetic tree of Cladocopium are provided.  
+# Symbiodiniaceae-in-juvenile-octocoral across depth. ITS2 seqyences files in this repository were derived from Symportal pipline. I addition, raw psbA sequences that were used to construct phylogenetic tree of Cladocopium are provided.  
