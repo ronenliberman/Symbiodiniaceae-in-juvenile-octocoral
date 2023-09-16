@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.353">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Ronen Liberman">
+
+<title>Code for analyzing algal symbiont in juvenile R</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="Revise CODE for generating figures in Liberman et al. 2023_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Revise CODE for generating figures in Liberman et al. 2023_files/libs/quarto-html/quarto.js"></script>
+<script src="Revise CODE for generating figures in Liberman et al. 2023_files/libs/quarto-html/popper.min.js"></script>
+<script src="Revise CODE for generating figures in Liberman et al. 2023_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Revise CODE for generating figures in Liberman et al. 2023_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Revise CODE for generating figures in Liberman et al. 2023_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Revise CODE for generating figures in Liberman et al. 2023_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Revise CODE for generating figures in Liberman et al. 2023_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Revise CODE for generating figures in Liberman et al. 2023_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Revise CODE for generating figures in Liberman et al. 2023_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Code for analyzing algal symbiont in juvenile R</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Ronen Liberman </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="this-code-is-used-to-analyze-symportal-results" class="level2">
+<h2 class="anchored" data-anchor-id="this-code-is-used-to-analyze-symportal-results"><strong>This code is used to analyze Symportal results</strong></h2>
+<p>In this code I use the raw file outputs for profiles from Symportal and also profile of adult colonies that were already analyzed in Liberman et al.&nbsp;(2022) to examine the algal symbiont community that were hosted by <em>Rhytisma fulvum</em> juveniles across depth during 11 month experiment.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Figure 1</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Figure2</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false" href="">Figure 3</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<section id="step-1-setting-up-and-loading-required-packages" class="level3">
+<h3 class="anchored" data-anchor-id="step-1-setting-up-and-loading-required-packages"><em>STEP 1</em> setting up and Loading required packages</h3>
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: pacman</code></pre>
+</div>
+</div>
+</section>
+<section id="step-2-we-can-now-look-at-the-its2-type-profiles-predicted-by-symportal." class="level3">
+<h3 class="anchored" data-anchor-id="step-2-we-can-now-look-at-the-its2-type-profiles-predicted-by-symportal."><em>STEP 2</em> We can now look at the ITS2 type profiles predicted by SymPortal.</h3>
+<p>load Symportal and merge it with my metadata normalize it</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>profRAW <span class="ot">=</span> <span class="fu">read.delim</span>(<span class="st">"raw_files/BarPlot/203_20220411_03_DBV_20220412T020330.profiles.absolute.abund_only.txt"</span>, <span class="at">header =</span> <span class="cn">TRUE</span>, <span class="at">check.names =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(profRAW)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">#View(profRAW)</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>MetaData <span class="ot">=</span> <span class="fu">read.csv</span>(<span class="st">"raw_files/BarPlot/Metadata1.csv"</span>)  <span class="do">### Loading metadata </span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(MetaData)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>p.Seq<span class="ot">=</span> <span class="fu">merge</span>(MetaData,profRAW,  <span class="at">by=</span><span class="st">"sample_uid"</span>, <span class="at">all =</span> T)  <span class="co">#merge both df by sampled number </span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co">#View(p.Seq)</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>p.Seq<span class="sc">$</span>collection_depth <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(p.Seq<span class="sc">$</span>collection_depth)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>p.Seq<span class="sc">$</span>Sampling.period <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(p.Seq<span class="sc">$</span>Sampling.period) </span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Normalization steps according to raw read numbers</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>its2ProfsTransposed <span class="ot">=</span> <span class="fu">t</span>(p.Seq[, <span class="dv">6</span><span class="sc">:</span><span class="fu">length</span>(p.Seq[<span class="dv">1</span>, ])]) <span class="co">#columns 6: are where the raw read start, after the metadata columns</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>its2ProfsList <span class="ot">=</span> <span class="fu">DGEList</span>(<span class="at">counts =</span> its2ProfsTransposed)</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(its2ProfsList<span class="sc">$</span>samples)</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>its2ProfsNorm <span class="ot">=</span>  <span class="fu">calcNormFactors</span>(its2ProfsList, <span class="at">method =</span> <span class="st">"TMM"</span>)</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(its2ProfsNorm<span class="sc">$</span>samples)</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>its2TMM <span class="ot">=</span> <span class="fu">t</span>(<span class="fu">cpm</span>(its2ProfsNorm, <span class="at">normalized.lib.sizes =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>its2ProfsNorm <span class="ot">=</span> <span class="fu">cbind</span>(p.Seq[,<span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>)], its2TMM) <span class="co">#columns 1:5 are the metadata columns </span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(its2ProfsNorm) <span class="co"># look at it </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="step-3-preparing-its2-type-profiles-for-plotting" class="level3">
+<h3 class="anchored" data-anchor-id="step-3-preparing-its2-type-profiles-for-plotting"><em>Step 3</em> Preparing ITS2 type profiles for plotting</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>colOrder2 <span class="ot">=</span> <span class="fu">order</span>(<span class="fu">colSums</span>(its2ProfsNorm[<span class="dv">6</span><span class="sc">:</span><span class="fu">length</span>(its2ProfsNorm[<span class="dv">1</span>,])]), <span class="at">decreasing =</span> <span class="cn">TRUE</span>) <span class="sc">+</span><span class="dv">5</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>its2ProfsPerc <span class="ot">=</span> <span class="fu">cbind</span>(its2ProfsNorm[,<span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>)],its2ProfsNorm[,<span class="fu">c</span>(colOrder2)])</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>its2ProfsPerc<span class="sc">$</span>sum <span class="ot">=</span> <span class="fu">apply</span>(its2ProfsPerc[, <span class="fu">c</span>(<span class="dv">6</span><span class="sc">:</span><span class="fu">length</span>(its2ProfsPerc[<span class="dv">1</span>,]))], <span class="dv">1</span>, <span class="cf">function</span>(x) {</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sum</span>(x, <span class="at">na.rm =</span> T)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>its2ProfsPerc <span class="ot">=</span> <span class="fu">cbind</span>(its2ProfsPerc[, <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>)], (its2ProfsPerc[, <span class="fu">c</span>(<span class="dv">6</span><span class="sc">:</span>(<span class="fu">ncol</span>(its2ProfsPerc)<span class="sc">-</span><span class="dv">1</span>))] </span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>                                                <span class="sc">/</span> its2ProfsPerc<span class="sc">$</span>sum))</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(its2ProfsPerc)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="do">##verifying that sum OTU of each sample = 1 (100%)</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(its2ProfsPerc[, <span class="fu">c</span>(<span class="dv">6</span><span class="sc">:</span>(<span class="fu">ncol</span>(its2ProfsPerc)))], <span class="dv">1</span>, <span class="cf">function</span>(x) {</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sum</span>(x, <span class="at">na.rm =</span> T)</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co">#view(its2ProfsPerc)</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>gssProf <span class="ot">=</span> <span class="fu">otuStack</span>(its2ProfsPerc, <span class="at">count.columns =</span> <span class="fu">c</span>(<span class="dv">6</span><span class="sc">:</span><span class="fu">length</span>(its2ProfsPerc[<span class="dv">1</span>, ])),</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>                   <span class="at">condition.columns =</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>))[<span class="dv">1</span><span class="sc">:</span><span class="dv">3133</span>,] <span class="co"># remove summ rows</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="step-4-organizing-the-data-according-to-the-way-i-would-like-to-visualize-it" class="level3">
+<h3 class="anchored" data-anchor-id="step-4-organizing-the-data-according-to-the-way-i-would-like-to-visualize-it"><em>Step 4</em> Organizing the data according to the way I would like to visualize it</h3>
+<p>In this case all the values in each time point and depth will be visualized using one pooled bar.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>prf <span class="ot">&lt;-</span> gssProf <span class="sc">%&gt;%</span>  <span class="do">## remove summ rows that have been created during normalization steps </span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(otu<span class="sc">!=</span><span class="st">"summ"</span>)<span class="sc">%&gt;%</span>                                            </span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Depthgroup =</span> <span class="fu">fct_relevel</span>(collection_depth, <span class="st">"10"</span>, <span class="st">"40"</span>))<span class="sc">%&gt;%</span>  <span class="co"># level shallow first then MCE</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Age =</span> <span class="fu">fct_relevel</span>(Sampling.period, <span class="st">"1_week"</span>, <span class="st">"2_Months"</span>, <span class="st">"5_Months"</span>,<span class="st">"7_Months"</span>,<span class="st">"11_Months"</span>)) </span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(prf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      count    otu sample_uid collection_depth Sampling.period time treatment
+1 0.0000000 210973     147971               10        7_Months    7     de_sh
+2 0.0000000 210973     147972               10        7_Months    7     sh_sh
+3 0.7288133 210973     147973               10          1_week    1     sh_sh
+4 0.7401499 210973     147974               40          1_week    1     sh_de
+5 0.4865480 210973     147975               40          1_week    1     sh_de
+6 0.0000000 210973     147976               10          1_week    1     de_sh
+  Depthgroup      Age
+1         10 7_Months
+2         10 7_Months
+3         10   1_week
+4         40   1_week
+5         40   1_week
+6         10   1_week</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">#change the profile names  of the legend to the ones I want on the plot using the file "Our profiles" </span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>lab<span class="ot">=</span> <span class="fu">read.csv</span>(<span class="st">"C:/Users/Ronen/Documents/PhD/Konstanz Collaboration/Genomic data/symportal/profiles/Our Profiles.csv"</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(lab)[<span class="dv">1</span>]<span class="ot">&lt;-</span> <span class="st">"otu"</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>mergd_for_lab<span class="ot">=</span> <span class="fu">merge</span>(lab,prf,  <span class="at">by=</span><span class="st">"otu"</span>, <span class="at">all =</span> T)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(mergd_for_lab)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     otu      ITS2_type_profile clustered.type genera count sample_uid
+1 210774 A1-A1bw-A1bf-A1bx-A1eb             A1      A     0     147984
+2 210774 A1-A1bw-A1bf-A1bx-A1eb             A1      A     0     147985
+3 210774 A1-A1bw-A1bf-A1bx-A1eb             A1      A     0     147987
+4 210774 A1-A1bw-A1bf-A1bx-A1eb             A1      A     0     147997
+5 210774 A1-A1bw-A1bf-A1bx-A1eb             A1      A     0     147998
+6 210774 A1-A1bw-A1bf-A1bx-A1eb             A1      A     0     147986
+  collection_depth Sampling.period time treatment Depthgroup      Age
+1               40        2_Months    2     sh_de         40 2_Months
+2               40        2_Months    2     de_de         40 2_Months
+3               40        5_Months    5     sh_de         40 5_Months
+4               40        5_Months    5     de_de         40 5_Months
+5               10        5_Months    5     sh_sh         10 5_Months
+6               10        2_Months    2     de_sh         10 2_Months</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Organize the factor according to the way I would like to view them on the plot</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">levels</span>(mergd_for_lab<span class="sc">$</span>Age) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"1-week"</span>, <span class="st">"2-Month"</span>, <span class="st">"5-Month"</span>,<span class="st">"7-Month"</span>,<span class="st">"11-Month"</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">levels</span>(mergd_for_lab<span class="sc">$</span>collection_depth) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Shallow"</span>,<span class="st">"MCE"</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="co"># look at the file</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="fu">View</span>(mergd_for_lab)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Additional data organization according to the way I’d plot visualize the data</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>new_abund <span class="ot">&lt;-</span> mergd_for_lab <span class="sc">%&gt;%</span> </span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Age,treatment,clustered.type) <span class="sc">%&gt;%</span> </span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">rel=</span> count<span class="sc">/</span> <span class="fu">n_distinct</span>(sample_uid)) <span class="co">#calculating relative abundance per group </span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co">#write.csv(file="add_factors", new_abund)</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>new_df <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"C:/Users/Ronen/Documents/PhD/Konstanz Collaboration/Genomic data/symportal/profiles/factors_added_changed.csv"</span>) <span class="do">## another metadata file to create the reciprocal experminet plot </span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(new_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   X    otu      ITS2_type_profile clustered.type genera     count sample_uid
+1  2 210774 A1-A1bw-A1bf-A1bx-A1eb             A1      A 0.0000000     147985
+2  4 210774 A1-A1bw-A1bf-A1bx-A1eb             A1      A 0.0000000     147997
+3  9 210774 A1-A1bw-A1bf-A1bx-A1eb             A1      A 0.0000000     148006
+4 13 210774 A1-A1bw-A1bf-A1bx-A1eb             A1      A 0.0000000     147982
+5 15 210774 A1-A1bw-A1bf-A1bx-A1eb             A1      A 0.2271364     148011
+6 16 210774 A1-A1bw-A1bf-A1bx-A1eb             A1      A 0.7168882     148012
+  source end Sampling.period time treatment Depthgroup      Age        rel
+1    MCE MCE        2_Months    2     de_de         40  2-Month 0.00000000
+2    MCE MCE        5_Months    5     de_de         40  5-Month 0.00000000
+3    MCE MCE        7_Months    7     de_de         40  7-Month 0.00000000
+4    MCE MCE        2_Months    2     de_de         40  2-Month 0.00000000
+5    MCE MCE       11_Months   11     de_de         40 11-Month 0.03244805
+6    MCE MCE       11_Months   11     de_de         40 11-Month 0.10241260</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># change end and source into factors </span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> new_df <span class="sc">%&gt;%</span>  </span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">#rename(c("Age" = "time")) %&gt;% </span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">end =</span> <span class="fu">as.factor</span>(end)) <span class="sc">%&gt;%</span> </span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">source=</span> <span class="fu">as.factor</span>(source))</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="co">#View(df)</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="co">#write.csv(file="relative abundance of profiles in juveniles", df) #export</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  n_df <span class="ot">&lt;-</span> <span class="fu">mutate</span>(df, <span class="at">clustered.type =</span> <span class="fu">fct_recode</span>(clustered.type, <span class="st">"A1-A1bw-A1bf"</span> <span class="ot">=</span> <span class="st">"A1"</span> , <span class="st">"Other Symbiodinium"</span><span class="ot">=</span><span class="st">"Other_Symbiodinium"</span>, <span class="st">"Breviolum B1"</span><span class="ot">=</span><span class="st">"B1"</span>, </span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>                                     <span class="st">"Cladocopium C1 + C. thermophilum mix"</span> <span class="ot">=</span><span class="st">"C1_and_mix"</span>  , <span class="st">"Cladocopium C1-C1dw"</span> <span class="ot">=</span><span class="st">"Cladocopium_C1"</span>  , <span class="st">"C64a/C64b"</span> <span class="ot">=</span> <span class="st">"C64a/C64b"</span> ,</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>                                      <span class="st">"Durusdinium D1-D4"</span><span class="ot">=</span><span class="st">"D1_D4"</span> , <span class="st">"Other Durusdinium"</span><span class="ot">=</span> <span class="st">"Other_Durusdinium"</span>, <span class="st">"F3m"</span><span class="ot">=</span><span class="st">"F3m"</span>))</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>depth_levels <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Shallow"</span>,<span class="st">"MCE"</span>) <span class="co"># in order to have the shallow above MCE</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>Profile_levels <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"A1-A1bw-A1bf"</span> ,<span class="st">"Other Symbiodinium"</span>,<span class="st">"Breviolum B1"</span>, <span class="st">"Cladocopium C1 + C. thermophilum mix"</span> , <span class="st">"Cladocopium C1-C1dw"</span>, <span class="st">"C64a/C64b"</span>,<span class="st">"Durusdinium D1-D4"</span>,<span class="st">"Other Durusdinium"</span>,<span class="st">"F3m"</span>)</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a><span class="co">#time_levels &lt;- c("1-week", "2-Month", "5-Month","7-Month","11-Month")</span></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>n_df<span class="sc">$</span>source<span class="ot">&lt;-</span> <span class="fu">factor</span>(n_df<span class="sc">$</span>source,depth_levels)  <span class="co">#set correct levels </span></span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>n_df<span class="sc">$</span>end<span class="ot">&lt;-</span> <span class="fu">factor</span>(n_df<span class="sc">$</span>end,depth_levels)        <span class="co">#set correct levels </span></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>n_df<span class="sc">$</span>clustered.type<span class="ot">&lt;-</span> <span class="fu">factor</span>( n_df<span class="sc">$</span>clustered.type,Profile_levels)  <span class="co">#set correct levels </span></span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a><span class="co">#levels(n_df$clustered.type) #check levels</span></span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>Sum_this <span class="ot">&lt;-</span>   n_df <span class="sc">%&gt;%</span> </span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(time,end,source,clustered.type) <span class="sc">%&gt;%</span> </span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(<span class="at">general_sum=</span> <span class="fu">sum</span>(rel), <span class="at">n=</span><span class="fu">n</span>()) <span class="sc">%&gt;%</span> </span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'time', 'end', 'source'. You can override
+using the `.groups` argument.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(Sum_this) <span class="co">#This df will be used to make Figure1 </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 x 6
+   time end     source  clustered.type                       general_sum     n
+  &lt;int&gt; &lt;fct&gt;   &lt;fct&gt;   &lt;fct&gt;                                      &lt;dbl&gt; &lt;int&gt;
+1     1 Shallow Shallow A1-A1bw-A1bf                              0.729      6
+2     1 Shallow Shallow Other Symbiodinium                        0          1
+3     1 Shallow Shallow Breviolum B1                              0.0273     1
+4     1 Shallow Shallow Cladocopium C1 + C. thermophilum mix      0.232      4
+5     1 Shallow Shallow Cladocopium C1-C1dw                       0          4
+6     1 Shallow Shallow C64a/C64b                                 0          4</code></pre>
+</div>
+</div>
+</section>
+<section id="step-5-making-supp.-table-s1-relative-abundace-of-algal-type-profile-at-each-time-point-from-each-treatment" class="level3">
+<h3 class="anchored" data-anchor-id="step-5-making-supp.-table-s1-relative-abundace-of-algal-type-profile-at-each-time-point-from-each-treatment"><em>Step 5</em> Making Supp. Table S1: Relative abundace of algal type profile at each time point from each treatment</h3>
+</section>
+<section id="step-6-plotting-the-data" class="level3">
+<h3 class="anchored" data-anchor-id="step-6-plotting-the-data"><em>Step 6</em> Plotting the data</h3>
+<p>Here I First create individual plots for each time point, I also add a the data for the adult colonies. Then I put them together into one plot.</p>
+</section>
+<section id="step-7-merge-all-the-plots-into-one" class="level3">
+<h3 class="anchored" data-anchor-id="step-7-merge-all-the-plots-into-one"><em>STEP 7</em> Merge all the plots into one</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>p_together <span class="ot">&lt;-</span> <span class="fu">ggarrange</span>(</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  p_add <span class="sc">+</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">panel.grid.major =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>                <span class="at">panel.background =</span> <span class="fu">element_blank</span>()),</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  adult_p_add <span class="sc">+</span> </span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">axis.text.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>          <span class="at">axis.ticks.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>          <span class="at">axis.title.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>          <span class="at">panel.grid.major =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>          <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>          <span class="at">panel.border =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>          <span class="at">panel.background =</span> <span class="fu">element_blank</span>()),</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">common.legend =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">legend =</span> <span class="st">"none"</span>,</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">nrow =</span> <span class="dv">1</span>,</span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Make left plot wider</span></span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">widths =</span> <span class="fu">c</span>(<span class="fl">0.8</span>, <span class="fl">0.2</span>) </span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 24 rows containing missing values (`position_stack()`).
+Removed 24 rows containing missing values (`position_stack()`).</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>p_together</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Revise-CODE-for-generating-figures-in-Liberman-et-al.-2023_files/figure-html/Merge%20plots%20into%20one-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co">#EXPORT</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="at">filename =</span> <span class="st">"Figure 1_review version.tiff"</span>, <span class="at">plot =</span> p_together,<span class="at">width =</span><span class="dv">25</span> , <span class="at">height =</span> <span class="dv">20</span>,<span class="at">dpi=</span><span class="dv">600</span>, </span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">units =</span> <span class="st">"cm"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="old-version-of-this-plot" class="level3">
+<h3 class="anchored" data-anchor-id="old-version-of-this-plot">Old Version of this plot</h3>
+<p>First submission version</p>
+</section>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<section id="step-1-pcoa-of-algal-symbiotns-in-juvenile-and-adults" class="level3">
+<h3 class="anchored" data-anchor-id="step-1-pcoa-of-algal-symbiotns-in-juvenile-and-adults"><em>Step 1</em> PCoA of Algal symbiotns in juvenile and Adults</h3>
+<p>Here I first select for Data of Cladocopium + adult colonies and then create its pcoA. The I will select Symbiodinium and Durusdinium, respectivly, and create PCoA. In the final step I combine plots.</p>
+<p>Loading libraries and data</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tibble)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ape)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stringr)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="co">#setwd("C:/Users/Ronen/Documents/PhD/Konstanz Collaboration/symportal/PcoA/With parents/")</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="co">#Adult colonies PCOA data</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>its2_parents <span class="ot">=</span> <span class="fu">read.delim</span>(</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">"raw_files/pcoA/177_20210916_all_03_DBV_20210917T005252.seqs.absolute.abund_only.txt"</span>, <span class="at">header =</span> <span class="cn">TRUE</span>, <span class="at">check.names =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="co">#Juvenile PCOA data</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>its2_poly<span class="ot">=</span><span class="fu">read.delim</span>(<span class="st">"raw_files/pcoA/203_20220411_03_DBV_20220412T020330.seqs.absolute.abund_only.txt"</span>, <span class="at">header =</span> <span class="cn">TRUE</span>, <span class="at">check.names =</span> <span class="cn">FALSE</span>) </span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>its2_poly2 <span class="ot">&lt;-</span> its2_poly[,<span class="sc">-</span><span class="dv">1</span>]</span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(its2_poly2) <span class="ot">&lt;-</span> its2_poly[,<span class="dv">1</span>]</span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a><span class="do">##Selecting for only The Rhytisma parental colonies</span></span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>Rhy_parents <span class="ot">&lt;-</span> its2_parents <span class="sc">%&gt;%</span> <span class="fu">filter</span>(sample_uid <span class="sc">==</span> <span class="st">"135462"</span> <span class="sc">|</span> sample_uid <span class="sc">==</span> <span class="st">"135463"</span> <span class="sc">|</span> sample_uid <span class="sc">==</span> <span class="st">"135464"</span></span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>                <span class="sc">|</span>sample_uid <span class="sc">==</span> <span class="st">"135465"</span><span class="sc">|</span>sample_uid <span class="sc">==</span> <span class="st">"135466"</span><span class="sc">|</span> sample_uid <span class="sc">==</span> <span class="st">"135467"</span> <span class="sc">|</span> sample_uid <span class="sc">==</span> <span class="st">"135468"</span><span class="sc">|</span></span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>                  sample_uid <span class="sc">==</span> <span class="st">"135468"</span> <span class="sc">|</span> sample_uid <span class="sc">==</span> <span class="st">"135469"</span> <span class="sc">|</span>sample_uid <span class="sc">==</span><span class="st">"135493"</span><span class="sc">|</span>sample_uid <span class="sc">==</span><span class="st">"135494"</span><span class="sc">|</span>sample_uid <span class="sc">==</span><span class="st">"135495"</span></span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>                <span class="sc">|</span>sample_uid <span class="sc">==</span><span class="st">"135496"</span>)</span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a><span class="co">#Selecting for CLADOCOPIUM only</span></span>
+<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a>Clado <span class="ot">&lt;-</span> its2_poly2 <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="fu">contains</span>(<span class="st">"C"</span>))</span>
+<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(Clado)</span>
+<span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a><span class="co">#this got us close, but ot only --- manually check showed we have 4 A and B that has c in the name so I need exclude the first 4 column too</span></span>
+<span id="cb19-30"><a href="#cb19-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-31"><a href="#cb19-31" aria-hidden="true" tabindex="-1"></a>Clado <span class="ot">&lt;-</span> Clado[<span class="fu">c</span>(<span class="dv">5</span><span class="sc">:</span><span class="dv">154</span>)]</span>
+<span id="cb19-32"><a href="#cb19-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-33"><a href="#cb19-33" aria-hidden="true" tabindex="-1"></a><span class="co">#View(Clado) - check </span></span>
+<span id="cb19-34"><a href="#cb19-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-35"><a href="#cb19-35" aria-hidden="true" tabindex="-1"></a>its2_poly <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">rownames_to_column</span>(Clado, <span class="st">"sample_uid"</span>) <span class="co">#merge two df's</span></span>
+<span id="cb19-36"><a href="#cb19-36" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(its2_poly)</span>
+<span id="cb19-37"><a href="#cb19-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-38"><a href="#cb19-38" aria-hidden="true" tabindex="-1"></a>df_list <span class="ot">&lt;-</span> <span class="fu">list</span>(its2_poly, Rhy_parents) <span class="co">#DF's into list</span></span>
+<span id="cb19-39"><a href="#cb19-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-40"><a href="#cb19-40" aria-hidden="true" tabindex="-1"></a>Counts <span class="ot">&lt;-</span> <span class="fu">Reduce</span>(<span class="cf">function</span>(x, y) <span class="fu">merge</span>(x, y, <span class="at">all=</span><span class="cn">TRUE</span>), df_list)  <span class="co">#merge all data frames in list</span></span>
+<span id="cb19-41"><a href="#cb19-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-42"><a href="#cb19-42" aria-hidden="true" tabindex="-1"></a><span class="co">#IMPORTANT - Re-check, comparing counts of any random sample</span></span>
+<span id="cb19-43"><a href="#cb19-43" aria-hidden="true" tabindex="-1"></a>Chek1 <span class="ot">&lt;-</span>its2_parents <span class="sc">%&gt;%</span> <span class="fu">filter</span>(sample_uid <span class="sc">==</span> <span class="st">"135462"</span>) </span>
+<span id="cb19-44"><a href="#cb19-44" aria-hidden="true" tabindex="-1"></a>Chek2 <span class="ot">&lt;-</span>Counts <span class="sc">%&gt;%</span> <span class="fu">filter</span>(sample_uid <span class="sc">==</span> <span class="st">"135462"</span>) <span class="co">#C1 = 11324</span></span>
+<span id="cb19-45"><a href="#cb19-45" aria-hidden="true" tabindex="-1"></a>Chek1<span class="sc">$</span>C1  <span class="co">#C1 = 11324</span></span>
+<span id="cb19-46"><a href="#cb19-46" aria-hidden="true" tabindex="-1"></a>Chek2<span class="sc">$</span>C1  <span class="co">#C1 = 11324</span></span>
+<span id="cb19-47"><a href="#cb19-47" aria-hidden="true" tabindex="-1"></a><span class="co"># good , similar counts#</span></span>
+<span id="cb19-48"><a href="#cb19-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-49"><a href="#cb19-49" aria-hidden="true" tabindex="-1"></a>Counts <span class="ot">&lt;-</span> Counts <span class="sc">%&gt;%</span> <span class="fu">mutate_all</span>(<span class="sc">~</span><span class="fu">replace</span>(., <span class="fu">is.na</span>(.), <span class="dv">0</span>))</span>
+<span id="cb19-50"><a href="#cb19-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-51"><a href="#cb19-51" aria-hidden="true" tabindex="-1"></a><span class="co"># Only numbers are allowed in the bray Curtis function</span></span>
+<span id="cb19-52"><a href="#cb19-52" aria-hidden="true" tabindex="-1"></a>NO_ID <span class="ot">&lt;-</span> Counts[,<span class="sc">-</span><span class="dv">1</span>] <span class="co">#- putting sample names as rownames</span></span>
+<span id="cb19-53"><a href="#cb19-53" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(NO_ID) <span class="ot">&lt;-</span> Counts[,<span class="dv">1</span>]</span>
+<span id="cb19-54"><a href="#cb19-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-55"><a href="#cb19-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-56"><a href="#cb19-56" aria-hidden="true" tabindex="-1"></a>bray_curtis_dist <span class="ot">&lt;-</span> vegan<span class="sc">::</span><span class="fu">vegdist</span>(NO_ID, <span class="at">method =</span> <span class="st">"bray"</span>) <span class="co"># Calculate bray curtis distances </span></span>
+<span id="cb19-57"><a href="#cb19-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-58"><a href="#cb19-58" aria-hidden="true" tabindex="-1"></a>bray_curtis_pcoa <span class="ot">&lt;-</span> ape<span class="sc">::</span><span class="fu">pcoa</span>(bray_curtis_dist)</span>
+<span id="cb19-59"><a href="#cb19-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-60"><a href="#cb19-60" aria-hidden="true" tabindex="-1"></a><span class="co"># But we only need the first two to demonstrate what we can do:</span></span>
+<span id="cb19-61"><a href="#cb19-61" aria-hidden="true" tabindex="-1"></a>bray_curtis_pcoa_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">pcoa1 =</span> bray_curtis_pcoa<span class="sc">$</span>vectors[,<span class="dv">1</span>], </span>
+<span id="cb19-62"><a href="#cb19-62" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">pcoa2 =</span> bray_curtis_pcoa<span class="sc">$</span>vectors[,<span class="dv">2</span>])</span>
+<span id="cb19-63"><a href="#cb19-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-64"><a href="#cb19-64" aria-hidden="true" tabindex="-1"></a><span class="co"># The variance expland by the coordinates </span></span>
+<span id="cb19-65"><a href="#cb19-65" aria-hidden="true" tabindex="-1"></a>PCoA_values<span class="ot">=</span> bray_curtis_pcoa<span class="sc">$</span>values<span class="sc">$</span>Relative_eig</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="step-2-making-two-factorpcoa-plots" class="level3">
+<h3 class="anchored" data-anchor-id="step-2-making-two-factorpcoa-plots"><em>Step 2</em> Making TWO-factorPCoA plots</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>meta <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"raw_files/pcoA/Metadata_Adult_And_Pol.csv"</span>) <span class="co">#load metadata for both juvenile and adults</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>bray_samples_status_pcoa_df <span class="ot">&lt;-</span> <span class="fu">cbind</span>(bray_curtis_pcoa_df,</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>                                          meta)</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(bray_samples_status_pcoa_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>            pcoa1      pcoa2 sample_uid sample collection_depth Sampling.period
+135462 -0.5436766 -0.3150615     135462    110               10           Adult
+135463 -0.5390254 -0.2939093     135463    111               10           Adult
+135464 -0.5224419 -0.2953439     135464    112               10           Adult
+135465 -0.5416212 -0.3188902     135465    113               10           Adult
+135466 -0.4905520 -0.2972581     135466    114               40           Adult
+135467 -0.4891503 -0.2952735     135467    115               40           Adult
+       treatment source.depth
+135462     Adult            5
+135463     Adult            5
+135464     Adult            5
+135465     Adult            5
+135466     Adult           45
+135467     Adult           45</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>bray_samples_status_pcoa_df<span class="sc">$</span>Sampling.period <span class="ot">&lt;-</span> <span class="fu">factor</span>(bray_samples_status_pcoa_df<span class="sc">$</span>Sampling.period, <span class="at">levels=</span> <span class="fu">c</span>(<span class="st">'1_week'</span>, <span class="st">'2_Months'</span>,<span class="st">'5_Months'</span>,<span class="st">'7_Months'</span>,<span class="st">'10_Months'</span>,<span class="st">'11_Months'</span>,<span class="st">'Adult'</span>))  <span class="co">#level according to the order I want</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>                                                                           </span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>bray_samples_status_pcoa_df <span class="ot">=</span> bray_samples_status_pcoa_df <span class="sc">%&gt;%</span> </span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">collection_depth =</span> <span class="fu">as.factor</span>(collection_depth)) <span class="sc">%&gt;%</span> </span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="fu">c</span>(<span class="st">"collection_depth"</span> <span class="ot">=</span> <span class="st">"Depth"</span>)) </span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Changing names of factors and organizig them in the order I want</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>bray_samples_status_pcoa_df<span class="sc">$</span>Sampling.period <span class="ot">&lt;-</span> <span class="fu">str_replace</span>(bray_samples_status_pcoa_df<span class="sc">$</span>Sampling.period, <span class="st">"1_week"</span>, <span class="st">"1 week"</span>)</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>bray_samples_status_pcoa_df<span class="sc">$</span>Sampling.period <span class="ot">&lt;-</span><span class="fu">str_replace_all</span>(bray_samples_status_pcoa_df<span class="sc">$</span>Sampling.period, <span class="st">"2_Months"</span>, <span class="st">"2 Months"</span>)</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>bray_samples_status_pcoa_df<span class="sc">$</span>Sampling.period <span class="ot">&lt;-</span><span class="fu">str_replace_all</span>(bray_samples_status_pcoa_df<span class="sc">$</span>Sampling.period, <span class="st">"2_Months"</span>, <span class="st">"2 Months"</span>)</span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>bray_samples_status_pcoa_df<span class="sc">$</span>Sampling.period <span class="ot">&lt;-</span><span class="fu">str_replace_all</span>(bray_samples_status_pcoa_df<span class="sc">$</span>Sampling.period, <span class="st">"5_Months"</span>, <span class="st">"5 Months"</span>)</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>bray_samples_status_pcoa_df<span class="sc">$</span>Sampling.period <span class="ot">&lt;-</span><span class="fu">str_replace_all</span>(bray_samples_status_pcoa_df<span class="sc">$</span>Sampling.period, <span class="st">"7_Months"</span>, <span class="st">"7 Months"</span>)</span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>bray_samples_status_pcoa_df<span class="sc">$</span>Sampling.period <span class="ot">&lt;-</span><span class="fu">str_replace_all</span>(bray_samples_status_pcoa_df<span class="sc">$</span>Sampling.period, <span class="st">"11_Months"</span>, <span class="st">"11 Months"</span>)</span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>bray_samples_status_pcoa_df<span class="sc">$</span>Sampling.period <span class="ot">&lt;-</span><span class="fu">str_replace_all</span>(bray_samples_status_pcoa_df<span class="sc">$</span>Sampling.period, <span class="st">"Adult"</span> , <span class="st">"Adults"</span>)</span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>bray_samples_status_pcoa_df<span class="sc">$</span>Sampling.period</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "Adults"    "Adults"    "Adults"    "Adults"    "Adults"    "Adults"   
+ [7] "Adults"    "Adults"    "Adults"    "Adults"    "Adults"    "Adults"   
+[13] "7 Months"  "7 Months"  "1 week"    "1 week"    "1 week"    "1 week"   
+[19] "1 week"    "2 Months"  "1 week"    "2 Months"  "2 Months"  "2 Months" 
+[25] "2 Months"  "2 Months"  "2 Months"  "2 Months"  "5 Months"  "5 Months" 
+[31] "5 Months"  "5 Months"  "5 Months"  "5 Months"  "5 Months"  "5 Months" 
+[37] "5 Months"  "5 Months"  "5 Months"  "5 Months"  "5 Months"  "5 Months" 
+[43] "5 Months"  "5 Months"  "5 Months"  "7 Months"  "7 Months"  "7 Months" 
+[49] "7 Months"  "7 Months"  "7 Months"  "7 Months"  "11 Months" "11 Months"
+[55] "11 Months" "11 Months" "11 Months" "11 Months" "11 Months" "11 Months"
+[61] "11 Months"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>bray_samples_status_pcoa_df<span class="sc">$</span>Sampling.period <span class="ot">&lt;-</span> <span class="fu">factor</span>(bray_samples_status_pcoa_df<span class="sc">$</span>Sampling.period, <span class="at">levels=</span> <span class="fu">c</span>(<span class="st">'1 week'</span>, <span class="st">'2 Months'</span>,<span class="st">'5 Months'</span>,<span class="st">'7 Months'</span>,<span class="st">'11 Months'</span>, <span class="st">'Adults'</span>))</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="co">#COLORS </span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>colorBlindGrey6   <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"#999999"</span>, <span class="st">"#E69F00"</span>, <span class="st">"#56B4E9"</span>, <span class="st">"#009E73"</span>, </span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>                       <span class="st">"#D55E00"</span>, <span class="st">"#CC79A7"</span>)</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="co">#Code of the figure </span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>pco_two_fac <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> bray_samples_status_pcoa_df, </span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">aes</span>(<span class="at">x=</span>pcoa1, <span class="at">y=</span>pcoa2,</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>                          <span class="at">shape=</span> Depth, <span class="at">color =</span> Sampling.period )) <span class="sc">+</span></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_shape_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="dv">16</span><span class="sc">:</span><span class="dv">18</span>)) <span class="sc">+</span></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span>colorBlindGrey6)<span class="sc">+</span></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">lty =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="dv">0</span>, <span class="at">lty =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"45%"</span>,</span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"20%"</span>) <span class="sc">+</span></span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>  <span class="co"># geom_hline(yintercept = 0, lty = 2) +</span></span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>  <span class="co">#geom_vline(xintercept = 0, lty = 2) +</span></span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">color =</span> <span class="fu">guide_legend</span>(<span class="at">title =</span> <span class="st">"Time following settelment"</span>)) <span class="sc">+</span></span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.8</span>, <span class="at">size =</span> <span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>)) <span class="co"># makes titles smaller</span></span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a>pco_two_fac</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Revise-CODE-for-generating-figures-in-Liberman-et-al.-2023_files/figure-html/TWO-factorPCoA-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> pco_two_fac <span class="sc">+</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">panel.grid =</span> <span class="fu">element_blank</span>(), </span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.border =</span> <span class="fu">element_rect</span>(<span class="at">fill=</span> <span class="st">"transparent"</span>),</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.line =</span> <span class="fu">element_line</span>(<span class="at">colour =</span> <span class="st">"black"</span>),</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.major =</span> <span class="fu">element_blank</span>(), <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(), </span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.background =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title =</span><span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">12</span>),</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text=</span><span class="fu">element_text</span>(<span class="at">color=</span><span class="st">"black"</span>, <span class="at">size=</span><span class="dv">12</span>),</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text.x=</span><span class="fu">element_blank</span>(), <span class="co">#remove x axis labels</span></span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.ticks.x=</span><span class="fu">element_blank</span>(), <span class="co">#remove x axis ticks</span></span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text.y=</span><span class="fu">element_blank</span>(),  <span class="co">#remove y axis labels</span></span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.ticks.y=</span><span class="fu">element_blank</span>()  <span class="co">#remove y axis ticks</span></span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>p1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Revise-CODE-for-generating-figures-in-Liberman-et-al.-2023_files/figure-html/TWO-factorPCoA-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>PCOA_cladocopium_two_fac <span class="ot">=</span> p1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="step-2-continiue-after-making-the-cladocopium-pcoa-i-also-want-to-do-similar-to-the-other-two-generas" class="level3">
+<h3 class="anchored" data-anchor-id="step-2-continiue-after-making-the-cladocopium-pcoa-i-also-want-to-do-similar-to-the-other-two-generas"><em>Step 2</em> CONTINIUE: After Making the CLADOCOPIUM PCoA i also want to do similar to the other two Generas</h3>
+<p>However here I dont have adults with such a genera</p>
+<p><strong>Symbiodinium</strong> :</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>dt <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"raw_files/pcoA/20220412T020330_braycurtis_samples_PCoA_coords_A_sqrt.csv"</span>,</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>      <span class="at">header =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>MetaData <span class="ot">=</span> <span class="fu">read.csv</span>(<span class="st">"raw_files/pcoA/Metadata.csv"</span>,<span class="at">header =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(dt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  sample sample_uid         PC1         PC2         PC3         PC4         PC5
+1      3     147971 -0.19332913 -0.50137727  0.01371280 -0.12144001 -0.07901363
+2      4     147972  0.02367826 -0.04182651 -0.10675140 -0.08085263 -0.02967918
+3      7     147973 -0.05189521 -0.06025325 -0.10597126  0.12471840  0.02106482
+4      8     147974 -0.08537865 -0.09709597 -0.16108695  0.12668044  0.01056497
+5      9     147975 -0.22205278  0.15243480 -0.03603554  0.09352520  0.03033449
+6     10     147976 -0.68471328  0.22901365 -0.10255161 -0.14869467 -0.12567404
+           PC6         PC7          PC8          PC9          PC10         PC11
+1 -0.022000636  0.06141360  0.059052994  0.016349502 -0.0006309772 -0.013963101
+2 -0.001583535  0.06125554 -0.016768223  0.018209171 -0.0293368520 -0.030284530
+3  0.040914229 -0.02141508 -0.042923823 -0.001008984 -0.0022093032 -0.004189225
+4  0.036994937  0.02187625  0.009465603 -0.037972001 -0.0131737739  0.021428939
+5 -0.030545315  0.01557313 -0.012572233 -0.053658808  0.0417674795  0.027980504
+6 -0.055496326 -0.06101240  0.025214641  0.003974090 -0.0275286842  0.001967992
+          PC12          PC13         PC14         PC15         PC16
+1 -0.004311717  0.0042059502  0.003619177 -0.001113627 -0.007859909
+2  0.001625331 -0.0448676761 -0.047098670 -0.028168299  0.022903247
+3 -0.015511537  0.0003028807 -0.044821809 -0.012457317  0.009613164
+4 -0.028202021  0.0172206647  0.014844986 -0.017166749 -0.004771738
+5  0.051288446 -0.0145199642 -0.023576571  0.005031609 -0.041399526
+6  0.031205388 -0.0011319859 -0.008808467  0.001411837 -0.025862522
+           PC17         PC18          PC19          PC20          PC21
+1 -0.0108682093 -0.004394416  3.296507e-03 -0.0017862378 -0.0000335932
+2  0.0240147742  0.017848780 -1.108961e-02 -0.0010065574 -0.0156985550
+3  0.0151198163  0.019591476 -5.315267e-03 -0.0016508180 -0.0062351618
+4  0.0009632247  0.005173282 -1.050102e-02  0.0055668820 -0.0044197191
+5  0.0234216494 -0.028273545 -3.638650e-03 -0.0005931889 -0.0018182606
+6  0.0100512466 -0.007053664 -2.096356e-05 -0.0014929395  0.0047688763
+           PC22          PC23          PC24          PC25          PC26 PC27
+1 -0.0007619841 -0.0015294489  0.0001872535 -0.0005531689 -0.0009065318    0
+2 -0.0019737683  0.0134323041 -0.0052244446 -0.0019908601  0.0007110881    0
+3 -0.0053600615  0.0118087039  0.0001227662 -0.0009159490  0.0016117907    0
+4  0.0129775028  0.0003734543 -0.0161842893  0.0031560611 -0.0040525365    0
+5  0.0025809952  0.0077964420  0.0019749492 -0.0023477320  0.0008701961    0
+6 -0.0009441594 -0.0037919791  0.0008445896  0.0009128302  0.0013462251    0
+  PC28 PC29 PC30 PC31 PC32 PC33 PC34 PC35 PC36 PC37 PC38 PC39 PC40 PC41 PC42
+1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+2    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+3    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+4    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+5    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+6    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+  PC43 PC44 PC45 PC46 PC47 PC48
+1    0    0    0    0    0    0
+2    0    0    0    0    0    0
+3    0    0    0    0    0    0
+4    0    0    0    0    0    0
+5    0    0    0    0    0    0
+6    0    0    0    0    0    0</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>merged_bray<span class="ot">=</span> <span class="fu">merge</span>(MetaData,dt,  <span class="at">by=</span><span class="fu">c</span>(<span class="st">"sample"</span>,<span class="st">"sample_uid"</span>))</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>                                        </span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(merged_bray)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  sample sample_uid collection_depth Sampling.period time treatment
+1     10     147976               10          1_week    1     de_sh
+2     11     147977               40          1_week    1     de_de
+3     12     147978               10        2_Months    2     sh_sh
+4     13     147979               40          1_week    1     de_de
+5     14     147980               40        2_Months    2     sh_de
+6     15     147981               10        2_Months    2     sh_sh
+           PC1         PC2          PC3         PC4         PC5          PC6
+1 -0.684713277  0.22901365 -0.102551608 -0.14869467 -0.12567404 -0.055496326
+2 -0.283269461  0.19129481 -0.029796226  0.07413839  0.01999618 -0.021989748
+3 -0.046889014 -0.10376777  0.043610868  0.07055503  0.04790962 -0.012667449
+4 -0.267525328  0.18514553  0.008222256  0.07910198  0.05398955 -0.005892722
+5 -0.051731954 -0.13443717 -0.162762607  0.07131726  0.04853684  0.023442527
+6 -0.002769446 -0.04155976 -0.085672860  0.10587101  0.00995994  0.022811417
+           PC7         PC8           PC9         PC10          PC11
+1 -0.061012401  0.02521464  0.0039740897 -0.027528684  1.967992e-03
+2 -0.001495158  0.02819477  0.0027776814  0.038127066 -2.455788e-02
+3  0.034618472  0.02017706 -0.0376352992  0.012445861 -6.530404e-03
+4  0.114200052 -0.07130333  0.0692281162 -0.002717287 -8.322022e-05
+5  0.041742227  0.03832360 -0.0188055586  0.024579796 -4.749816e-03
+6 -0.030138376 -0.03486660  0.0007373797 -0.016373313 -1.559534e-02
+           PC12         PC13         PC14          PC15         PC16
+1  0.0312053880 -0.001131986 -0.008808467  1.411837e-03 -0.025862522
+2 -0.0748416781 -0.014438537  0.010277838 -1.946525e-02  0.058160919
+3  0.0186482476 -0.069897908 -0.033909219 -3.570989e-05  0.024720305
+4 -0.0069007537  0.026726323  0.037489072  3.495431e-02  0.020518518
+5 -0.0108800562 -0.010180607  0.027179246 -2.557478e-02  0.011052224
+6 -0.0002058966 -0.015876229 -0.036355831 -9.358182e-03 -0.009342181
+          PC17          PC18          PC19          PC20         PC21
+1  0.010051247 -0.0070536641 -2.096356e-05 -0.0014929395  0.004768876
+2 -0.054858167  0.0117579741 -1.031241e-02 -0.0114849784 -0.006223378
+3 -0.014625297  0.0007617602 -2.727579e-03  0.0143074454  0.016768769
+4 -0.004720115  0.0177296769  1.500930e-02  0.0176409983 -0.005875452
+5  0.018424101 -0.0066034504  1.435394e-02  0.0001950624  0.012104803
+6 -0.004773391  0.0075079132 -5.585175e-03 -0.0127967144  0.013692495
+           PC22         PC23          PC24          PC25          PC26 PC27
+1 -0.0009441594 -0.003791979  0.0008445896  0.0009128302  0.0013462251    0
+2 -0.0077786195 -0.012313206  0.0033008479 -0.0022391340 -0.0009316613    0
+3 -0.0021654410 -0.001767777  0.0038679802  0.0052741956  0.0029766244    0
+4  0.0052875016  0.006452529 -0.0041256969  0.0003745814 -0.0011526902    0
+5  0.0031392721  0.006012369  0.0090301284  0.0007395379  0.0001065852    0
+6 -0.0086160638  0.008352498  0.0005236231  0.0001469172 -0.0052407025    0
+  PC28 PC29 PC30 PC31 PC32 PC33 PC34 PC35 PC36 PC37 PC38 PC39 PC40 PC41 PC42
+1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+2    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+3    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+4    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+5    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+6    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+  PC43 PC44 PC45 PC46 PC47 PC48
+1    0    0    0    0    0    0
+2    0    0    0    0    0    0
+3    0    0    0    0    0    0
+4    0    0    0    0    0    0
+5    0    0    0    0    0    0
+6    0    0    0    0    0    0</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Creates a plot</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>merged_bray <span class="ot">=</span> merged_bray <span class="sc">%&gt;%</span> </span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">collection_depth =</span> <span class="fu">as.factor</span>(collection_depth)) <span class="sc">%&gt;%</span> </span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Sampling.period =</span> <span class="fu">as.factor</span>(Sampling.period)) <span class="sc">%&gt;%</span> </span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="fu">c</span>(<span class="st">"collection_depth"</span> <span class="ot">=</span> <span class="st">"Depth"</span>)) </span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a><span class="fu">View</span>(merged_bray)</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>colorBlindGrey5   <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"#999999"</span>, <span class="st">"#E69F00"</span>, <span class="st">"#56B4E9"</span>, <span class="st">"#009E73"</span>, </span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>                       <span class="st">"#D55E00"</span> )</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a><span class="co">#levels(merged_bray$Sampling.period)</span></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>merged_bray<span class="sc">$</span>Sampling.period <span class="ot">&lt;-</span> <span class="fu">factor</span>(merged_bray<span class="sc">$</span>Sampling.period, <span class="at">levels=</span> <span class="fu">c</span>(<span class="st">'1_week'</span>, <span class="st">'2_Months'</span>,<span class="st">'5_Months'</span>,<span class="st">'7_Months'</span>,<span class="st">'11_Months'</span>))</span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>                                                                                                            </span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a><span class="do">########## pco plot for two factors</span></span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a><span class="co">#View(merged_bray)</span></span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>pco_two_fac <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> merged_bray, </span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">aes</span>(<span class="at">x=</span>PC1, <span class="at">y=</span>PC2,</span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a>                          <span class="at">shape=</span> Depth, <span class="at">color =</span> Sampling.period )) <span class="sc">+</span></span>
+<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_shape_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="dv">16</span><span class="sc">:</span><span class="dv">18</span>)) <span class="sc">+</span></span>
+<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span>colorBlindGrey5)<span class="sc">+</span></span>
+<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"27%"</span>,</span>
+<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"21%"</span>) <span class="sc">+</span></span>
+<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a>   <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">lty =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb31-24"><a href="#cb31-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="dv">0</span>, <span class="at">lty =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb31-25"><a href="#cb31-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.8</span>)<span class="sc">+</span></span>
+<span id="cb31-26"><a href="#cb31-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">color =</span> <span class="fu">guide_legend</span>(<span class="at">title =</span> <span class="st">"Time following settelment"</span>)) <span class="sc">+</span></span>
+<span id="cb31-27"><a href="#cb31-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.8</span>, <span class="at">size =</span> <span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb31-28"><a href="#cb31-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>)) <span class="co"># makes titles smaller</span></span>
+<span id="cb31-29"><a href="#cb31-29" aria-hidden="true" tabindex="-1"></a>pco_two_fac</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Revise-CODE-for-generating-figures-in-Liberman-et-al.-2023_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> pco_two_fac <span class="sc">+</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"27%"</span>) <span class="sc">+</span> </span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"21%"</span>) <span class="sc">+</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">panel.grid =</span> <span class="fu">element_blank</span>(), </span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.border =</span> <span class="fu">element_rect</span>(<span class="at">fill=</span> <span class="st">"transparent"</span>),</span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.line =</span> <span class="fu">element_line</span>(<span class="at">colour =</span> <span class="st">"black"</span>),</span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.major =</span> <span class="fu">element_blank</span>(), <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(), </span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.background =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title =</span><span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">12</span>),</span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text=</span><span class="fu">element_text</span>(<span class="at">color=</span><span class="st">"black"</span>, <span class="at">size=</span><span class="dv">12</span>),</span>
+<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text.x=</span><span class="fu">element_blank</span>(), <span class="co">#remove x axis labels</span></span>
+<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.ticks.x=</span><span class="fu">element_blank</span>(), <span class="co">#remove x axis ticks</span></span>
+<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text.y=</span><span class="fu">element_blank</span>(),  <span class="co">#remove y axis labels</span></span>
+<span id="cb32-19"><a href="#cb32-19" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.ticks.y=</span><span class="fu">element_blank</span>()  <span class="co">#remove y axis ticks</span></span>
+<span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb32-21"><a href="#cb32-21" aria-hidden="true" tabindex="-1"></a>p2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Revise-CODE-for-generating-figures-in-Liberman-et-al.-2023_files/figure-html/unnamed-chunk-7-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>PCOA_symbiodinium_two_fac <span class="ot">=</span> p2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><strong>Durusdinium</strong>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>dt <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"raw_files/pcoA/20220412T020330_braycurtis_samples_PCoA_coords_D_sqrt.csv"</span>,<span class="at">header =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="co">#View(dt)</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>MetaData <span class="ot">=</span> <span class="fu">read.csv</span>(<span class="st">"raw_files/pcoA/Metadata.csv"</span>,<span class="at">header =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>merged_bray<span class="ot">=</span> <span class="fu">merge</span>(MetaData,dt,  <span class="at">by=</span><span class="fu">c</span>(<span class="st">"sample"</span>,<span class="st">"sample_uid"</span>))</span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>merged_bray <span class="ot">=</span> merged_bray <span class="sc">%&gt;%</span> </span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">collection_depth =</span> <span class="fu">as.factor</span>(collection_depth)) <span class="sc">%&gt;%</span> </span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Sampling.period =</span> <span class="fu">as.factor</span>(Sampling.period)) <span class="sc">%&gt;%</span> </span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="fu">c</span>(<span class="st">"collection_depth"</span> <span class="ot">=</span> <span class="st">"Depth"</span>)) </span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a><span class="co">#levels(merged_bray$Sampling.period)</span></span>
+<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a>merged_bray<span class="sc">$</span>Sampling.period <span class="ot">&lt;-</span> <span class="fu">factor</span>(merged_bray<span class="sc">$</span>Sampling.period, <span class="at">levels=</span> <span class="fu">c</span>(<span class="st">'1_week'</span>, <span class="st">'2_Months'</span>,<span class="st">'5_Months'</span>,<span class="st">'7_Months'</span>,<span class="st">'11_Months'</span>))</span>
+<span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-17"><a href="#cb34-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-18"><a href="#cb34-18" aria-hidden="true" tabindex="-1"></a>colorBlindGrey5   <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"#999999"</span>, <span class="st">"#E69F00"</span>, <span class="st">"#56B4E9"</span>, <span class="st">"#009E73"</span>, </span>
+<span id="cb34-19"><a href="#cb34-19" aria-hidden="true" tabindex="-1"></a>                       <span class="st">"#D55E00"</span> )</span>
+<span id="cb34-20"><a href="#cb34-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-21"><a href="#cb34-21" aria-hidden="true" tabindex="-1"></a>pco_two_fac <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> merged_bray, </span>
+<span id="cb34-22"><a href="#cb34-22" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">aes</span>(<span class="at">x=</span>PC1, <span class="at">y=</span>PC2,</span>
+<span id="cb34-23"><a href="#cb34-23" aria-hidden="true" tabindex="-1"></a>                          <span class="at">shape=</span> Depth, <span class="at">color =</span> Sampling.period )) <span class="sc">+</span></span>
+<span id="cb34-24"><a href="#cb34-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_shape_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="dv">16</span><span class="sc">:</span><span class="dv">18</span>)) <span class="sc">+</span></span>
+<span id="cb34-25"><a href="#cb34-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span>colorBlindGrey5)<span class="sc">+</span></span>
+<span id="cb34-26"><a href="#cb34-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"24%"</span>,</span>
+<span id="cb34-27"><a href="#cb34-27" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"17%"</span>) <span class="sc">+</span></span>
+<span id="cb34-28"><a href="#cb34-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">lty =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb34-29"><a href="#cb34-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="dv">0</span>, <span class="at">lty =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb34-30"><a href="#cb34-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.8</span>)<span class="sc">+</span></span>
+<span id="cb34-31"><a href="#cb34-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">color =</span> <span class="fu">guide_legend</span>(<span class="at">title =</span> <span class="st">"Time following settelment"</span>)) <span class="sc">+</span></span>
+<span id="cb34-32"><a href="#cb34-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.8</span>, <span class="at">size =</span> <span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb34-33"><a href="#cb34-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>)) <span class="co"># makes titles smaller</span></span>
+<span id="cb34-34"><a href="#cb34-34" aria-hidden="true" tabindex="-1"></a>pco_two_fac</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Revise-CODE-for-generating-figures-in-Liberman-et-al.-2023_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>p3 <span class="ot">&lt;-</span> pco_two_fac <span class="sc">+</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"24%"</span>) <span class="sc">+</span> </span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"17%"</span>) <span class="sc">+</span></span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">panel.grid =</span> <span class="fu">element_blank</span>(), </span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.border =</span> <span class="fu">element_rect</span>(<span class="at">fill=</span> <span class="st">"transparent"</span>),</span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.line =</span> <span class="fu">element_line</span>(<span class="at">colour =</span> <span class="st">"black"</span>),</span>
+<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.major =</span> <span class="fu">element_blank</span>(), <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(), </span>
+<span id="cb35-13"><a href="#cb35-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.background =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb35-14"><a href="#cb35-14" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title =</span><span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">12</span>),</span>
+<span id="cb35-15"><a href="#cb35-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text=</span><span class="fu">element_text</span>(<span class="at">color=</span><span class="st">"black"</span>, <span class="at">size=</span><span class="dv">12</span>),</span>
+<span id="cb35-16"><a href="#cb35-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text.x=</span><span class="fu">element_blank</span>(), <span class="co">#remove x axis labels</span></span>
+<span id="cb35-17"><a href="#cb35-17" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.ticks.x=</span><span class="fu">element_blank</span>(), <span class="co">#remove x axis ticks</span></span>
+<span id="cb35-18"><a href="#cb35-18" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text.y=</span><span class="fu">element_blank</span>(),  <span class="co">#remove y axis labels</span></span>
+<span id="cb35-19"><a href="#cb35-19" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.ticks.y=</span><span class="fu">element_blank</span>()  <span class="co">#remove y axis ticks</span></span>
+<span id="cb35-20"><a href="#cb35-20" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb35-21"><a href="#cb35-21" aria-hidden="true" tabindex="-1"></a>p3</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Revise-CODE-for-generating-figures-in-Liberman-et-al.-2023_files/figure-html/unnamed-chunk-8-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>PCOA_Durusdinium_two_fac <span class="ot">=</span> p3</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="co">#ggsave(filename = "PCOA of durusdinium with collection.depth and time", plot = PCOA_symbiodinium_two_fac, device = "jpeg", width = 10, height = 7,dpi=600, </span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a> <span class="co">#      units = "in")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="step-3-combine-all-the-plots-into-one-figure-2" class="level3">
+<h3 class="anchored" data-anchor-id="step-3-combine-all-the-plots-into-one-figure-2"><em>Step 3</em> Combine all the plots into one Figure 2</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggpubr)</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(grid)</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gridExtra)</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gtable)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'gtable' was built under R version 4.1.3</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>p4<span class="ot">=</span><span class="fu">grid.arrange</span>(p1,<span class="at">ncol=</span><span class="dv">1</span> <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">"none"</span>), </span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>             <span class="fu">arrangeGrob</span>( </span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>                         p2 <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">"none"</span>), </span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>                         p3 <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">"none"</span>),</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>                         <span class="at">nrow =</span> <span class="dv">1</span>,<span class="at">ncol=</span><span class="dv">2</span> ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Revise-CODE-for-generating-figures-in-Liberman-et-al.-2023_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>p4</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>TableGrob (2 x 1) "arrange": 2 grobs
+  z     cells    name            grob
+1 1 (1-1,1-1) arrange  gtable[layout]
+2 2 (2-2,1-1) arrange gtable[arrange]</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co">#export</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a><span class="co">#ggsave(filename = "PCOA of all.jpeg", plot = p4,  width = 18, height = 24,dpi=600, </span></span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a> <span class="co">#      units = "cm")         </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</div>
+<div id="tabset-1-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-3-tab">
+<section id="phylogenetic-tree" class="level3">
+<h3 class="anchored" data-anchor-id="phylogenetic-tree"><em>Phylogenetic tree</em></h3>
+<p>Here I’m using ggtree package to build a circular phylogenetic tree of the non-coding region psbA. The phylogenetic values were created by IQTREE and therefore I am using the function related to this software, More Info: https://yulab-smu.top/treedata-book/chapter1.html</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>iq<span class="ot">=</span> <span class="fu">read.iqtree</span>(<span class="st">"raw_files/TREE_psbA/raw_data/all.psba.no27.wc3gulf.aligned.fasta.contree"</span>)</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="co">#iq= read.iqtree("all.psba.no27.wc3gulf.aligned.fasta.contree")  </span></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>tib_q <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(iq)   <span class="do">## look at the data in a table format  </span></span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>metdat <span class="ot">&lt;-</span> <span class="fu">import</span>(<span class="st">"raw_files/TREE_psbA/raw_data/phylo_dat_for_iqtree_new.csv"</span>) <span class="co"># import the metadata </span></span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>metdat_2 <span class="ot">&lt;-</span> metdat <span class="sc">%&gt;%</span> </span>
+<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="fu">c</span>(<span class="st">"Source"</span> <span class="ot">=</span> <span class="st">"group"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following `from` values were not present in `x`: Source</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>metdat_3 <span class="ot">&lt;-</span> metdat_2 <span class="sc">%&gt;%</span> </span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">name =</span> <span class="fu">as.factor</span>(name)) <span class="sc">%&gt;%</span></span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">name =</span> <span class="fu">fct_relevel</span>(name, <span class="st">"2"</span>, <span class="st">"5"</span>,<span class="st">"7"</span>,<span class="st">"11"</span>, <span class="st">"na"</span>))</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>nw <span class="ot">&lt;-</span> <span class="fu">ggtree</span>(iq, <span class="at">layout=</span><span class="st">"fan"</span>, <span class="at">open.angle=</span><span class="dv">15</span>, <span class="at">size=</span><span class="fl">0.3</span>) <span class="co">#basic tree</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Scale for y is already present.
+Adding another scale for y, which will replace the existing scale.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>nw <span class="ot">&lt;-</span> nw <span class="sc">%&lt;+%</span> metdat_3  <span class="do">## add metadata</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>nw</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Revise-CODE-for-generating-figures-in-Liberman-et-al.-2023_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>nw1 <span class="ot">&lt;-</span> nw<span class="sc">+</span> <span class="fu">geom_tippoint</span>(</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">colour=</span> Sample_origin),          <span class="co"># tip color by continent. You may change shape adding "shape = "</span></span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">size =</span> <span class="fl">1.5</span>,<span class="at">alpha=</span><span class="fl">0.8</span>) <span class="sc">+</span>                             <span class="co"># define the size of the point at the tip</span></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a><span class="fu">scale_colour_brewer</span>(</span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">"Source"</span>,                    <span class="co"># name of your color scheme (will show up in the legend like this)</span></span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">palette =</span> <span class="st">"Set2"</span>, <span class="at">guide=</span><span class="fu">guide_legend</span>(<span class="at">keywidth=</span><span class="fl">0.3</span>,</span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a>                                               <span class="at">keyheight=</span><span class="fl">0.3</span>,</span>
+<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a>                                               <span class="at">ncol=</span><span class="dv">2</span>,</span>
+<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a>                                               <span class="at">override.aes=</span><span class="fu">list</span>(<span class="at">size=</span><span class="dv">2</span>,<span class="at">alpha=</span><span class="dv">1</span>),</span>
+<span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a>                                               <span class="at">order=</span><span class="dv">1</span>)</span>
+<span id="cb48-11"><a href="#cb48-11" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">+</span></span>
+<span id="cb48-12"><a href="#cb48-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb48-13"><a href="#cb48-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>),</span>
+<span id="cb48-14"><a href="#cb48-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>),</span>
+<span id="cb48-15"><a href="#cb48-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.box =</span> <span class="st">"horizontal"</span>, <span class="at">legend.key.size =</span> <span class="fu">unit</span>(<span class="dv">2</span>,<span class="st">"line"</span>)</span>
+<span id="cb48-16"><a href="#cb48-16" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb48-17"><a href="#cb48-17" aria-hidden="true" tabindex="-1"></a>nw1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Revise-CODE-for-generating-figures-in-Liberman-et-al.-2023_files/figure-html/unnamed-chunk-10-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>nw2 <span class="ot">&lt;-</span> nw1 <span class="sc">+</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_fruit</span>(</span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">geom=</span>geom_star,</span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">fill=</span>name),</span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">starshape=</span><span class="dv">26</span>,</span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">color=</span><span class="cn">NA</span>,</span>
+<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">size=</span><span class="dv">3</span>,</span>
+<span id="cb49-8"><a href="#cb49-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">starstroke=</span><span class="dv">0</span>,</span>
+<span id="cb49-9"><a href="#cb49-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">offset=</span><span class="fl">0.1</span>,</span>
+<span id="cb49-10"><a href="#cb49-10" aria-hidden="true" tabindex="-1"></a>)<span class="sc">+</span></span>
+<span id="cb49-11"><a href="#cb49-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb49-12"><a href="#cb49-12" aria-hidden="true" tabindex="-1"></a><span class="co">#  geom_tiplab(aes(label=name,subset=grepl("_mo",name)),offset=.02,size=1.2) +</span></span>
+<span id="cb49-13"><a href="#cb49-13" aria-hidden="true" tabindex="-1"></a>  <span class="co">#geom_fruit(</span></span>
+<span id="cb49-14"><a href="#cb49-14" aria-hidden="true" tabindex="-1"></a>   <span class="co"># geom=geom_tile,</span></span>
+<span id="cb49-15"><a href="#cb49-15" aria-hidden="true" tabindex="-1"></a>    <span class="co">#mapping=aes(fill=name),</span></span>
+<span id="cb49-16"><a href="#cb49-16" aria-hidden="true" tabindex="-1"></a>    <span class="co">#size= 3, width=1.09,height=1,</span></span>
+<span id="cb49-17"><a href="#cb49-17" aria-hidden="true" tabindex="-1"></a>    <span class="co">#offset=0,</span></span>
+<span id="cb49-18"><a href="#cb49-18" aria-hidden="true" tabindex="-1"></a>  <span class="co">#)  +</span></span>
+<span id="cb49-19"><a href="#cb49-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(</span>
+<span id="cb49-20"><a href="#cb49-20" aria-hidden="true" tabindex="-1"></a>   <span class="at">name=</span><span class="st">"Juvenile age (Months)"</span>,</span>
+<span id="cb49-21"><a href="#cb49-21" aria-hidden="true" tabindex="-1"></a>   <span class="at">values=</span><span class="fu">c</span>(<span class="st">"black"</span>, <span class="st">"gray75"</span>, <span class="st">"#bd0026"</span>, <span class="st">"#74a9cf"</span>, <span class="st">"white"</span>),</span>
+<span id="cb49-22"><a href="#cb49-22" aria-hidden="true" tabindex="-1"></a>   <span class="at">guide=</span><span class="fu">guide_legend</span>(</span>
+<span id="cb49-23"><a href="#cb49-23" aria-hidden="true" tabindex="-1"></a>     <span class="at">keywidth=</span><span class="fl">0.3</span>,</span>
+<span id="cb49-24"><a href="#cb49-24" aria-hidden="true" tabindex="-1"></a>     <span class="at">keyheight=</span><span class="fl">0.3</span>,</span>
+<span id="cb49-25"><a href="#cb49-25" aria-hidden="true" tabindex="-1"></a>     <span class="at">order=</span><span class="dv">3</span>,<span class="at">ncol=</span><span class="dv">1</span></span>
+<span id="cb49-26"><a href="#cb49-26" aria-hidden="true" tabindex="-1"></a>   ),</span>
+<span id="cb49-27"><a href="#cb49-27" aria-hidden="true" tabindex="-1"></a>   <span class="at">na.translate=</span><span class="cn">FALSE</span></span>
+<span id="cb49-28"><a href="#cb49-28" aria-hidden="true" tabindex="-1"></a>  )<span class="sc">+</span></span>
+<span id="cb49-29"><a href="#cb49-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text2</span>(<span class="fu">aes</span>(<span class="at">label =</span>SH_aLRT, <span class="at">subset=</span> SH_aLRT<span class="sc">&gt;</span><span class="dv">80</span>), <span class="at">size =</span> <span class="fl">1.2</span>,  <span class="do">##addint bootstrap support</span></span>
+<span id="cb49-30"><a href="#cb49-30" aria-hidden="true" tabindex="-1"></a>             <span class="at">color =</span> <span class="st">"black"</span>,</span>
+<span id="cb49-31"><a href="#cb49-31" aria-hidden="true" tabindex="-1"></a>             <span class="at">hjust =</span> <span class="sc">-</span><span class="dv">1</span>, </span>
+<span id="cb49-32"><a href="#cb49-32" aria-hidden="true" tabindex="-1"></a>             <span class="at">vjust =</span> <span class="sc">-</span><span class="dv">1</span>,<span class="at">check_overlap=</span><span class="cn">TRUE</span>)<span class="sc">+</span></span>
+<span id="cb49-33"><a href="#cb49-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb49-34"><a href="#cb49-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>),</span>
+<span id="cb49-35"><a href="#cb49-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>),</span>
+<span id="cb49-36"><a href="#cb49-36" aria-hidden="true" tabindex="-1"></a>     <span class="at">legend.key.size =</span> <span class="fu">unit</span>(<span class="dv">2</span>,<span class="st">"line"</span>)</span>
+<span id="cb49-37"><a href="#cb49-37" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb49-38"><a href="#cb49-38" aria-hidden="true" tabindex="-1"></a>nw2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Revise-CODE-for-generating-figures-in-Liberman-et-al.-2023_files/figure-html/unnamed-chunk-10-3.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>nw3 <span class="ot">&lt;-</span> nw2 <span class="sc">+</span> </span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">new_scale_fill</span>() <span class="sc">+</span></span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_fruit</span>(                                    <span class="co">#adding information about the lineage of the algae symbionts around the tree (circle)</span></span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">geom=</span>geom_tile,                              <span class="co"># this function is from ggtreeExtra pck </span></span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">fill=</span>Lineage),</span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">width=</span><span class="fl">0.025</span>,</span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">offset=</span><span class="fl">0.1</span></span>
+<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(</span>
+<span id="cb50-10"><a href="#cb50-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">name=</span><span class="st">"Algal-symbiont"</span>,                             <span class="do">### this is from the my sample data file </span></span>
+<span id="cb50-11"><a href="#cb50-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># palette = "Set1",</span></span>
+<span id="cb50-12"><a href="#cb50-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">values=</span><span class="fu">c</span>(<span class="st">"C1"</span><span class="ot">=</span> <span class="st">'#c2e699'</span>,  <span class="st">"C27"</span> <span class="ot">=</span> <span class="st">'#d7b5d8'</span>,</span>
+<span id="cb50-13"><a href="#cb50-13" aria-hidden="true" tabindex="-1"></a>             <span class="st">"C3"</span><span class="ot">=</span>  <span class="st">'gray75'</span>, <span class="st">"C3gulf"</span><span class="ot">=</span><span class="st">'#ffffcc'</span>, <span class="st">"Cladocopium sp."</span><span class="ot">=</span> <span class="st">'#004529'</span>,<span class="st">"C64"</span><span class="ot">=</span><span class="st">'#238443'</span>,<span class="st">"C7"</span><span class="ot">=</span> <span class="st">'#7a0177'</span>),</span>
+<span id="cb50-14"><a href="#cb50-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">guide=</span><span class="fu">guide_legend</span>(<span class="at">keywidth=</span><span class="fl">0.5</span>, <span class="at">keyheight=</span><span class="fl">0.5</span>, <span class="at">ncol=</span><span class="dv">2</span>, <span class="at">order=</span><span class="dv">2</span>)</span>
+<span id="cb50-15"><a href="#cb50-15" aria-hidden="true" tabindex="-1"></a>  )<span class="sc">+</span> </span>
+<span id="cb50-16"><a href="#cb50-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_treescale</span>(<span class="at">fontsize=</span><span class="dv">3</span>, <span class="at">linesize=</span><span class="fl">1.5</span>, <span class="at">offset=</span>.<span class="dv">5</span>) <span class="sc">+</span></span>
+<span id="cb50-17"><a href="#cb50-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb50-18"><a href="#cb50-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"bottom"</span>,</span>
+<span id="cb50-19"><a href="#cb50-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>),</span>
+<span id="cb50-20"><a href="#cb50-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>),</span>
+<span id="cb50-21"><a href="#cb50-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.box =</span> <span class="st">"horizontal"</span>, <span class="at">legend.key.size =</span> <span class="fu">unit</span>(<span class="dv">2</span>,<span class="st">"line"</span>))</span>
+<span id="cb50-22"><a href="#cb50-22" aria-hidden="true" tabindex="-1"></a>nw3</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Revise-CODE-for-generating-figures-in-Liberman-et-al.-2023_files/figure-html/unnamed-chunk-10-4.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="co">#EXPORT </span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a><span class="co">#setwd("~/PhD/Konstanz Collaboration/Genomic data/psba/PhylogeneticTree/processed data")</span></span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a><span class="co">#export</span></span>
+<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a><span class="co">#ggsave(plot=nw3, file="circ_tree_with_bootstrap.tiff", dpi= 600,width =35 , height = 25,units = "cm")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</div>
+</div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

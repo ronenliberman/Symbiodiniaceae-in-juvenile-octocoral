@@ -1,0 +1,1242 @@
+---
+title: "Code for analyzing algal symbiont in juvenile R"
+author: "Ronen Liberman"
+format: html
+editor: visual
+---
+
+## **This code is used to analyze Symportal results**
+
+In this code I use the raw file outputs for profiles from Symportal and also profile of adult colonies that were already analyzed in Liberman et al. (2022) to examine the algal symbiont community that were hosted by *Rhytisma fulvum* juveniles across depth during 11 month experiment.
+
+```{r setup, include=FALSE, echo=FALSE}
+
+require("knitr")
+opts_knit$set(root.dir = "~/PhD/Konstanz Collaboration/Genomic data/symportal/R codes and scripts/Symbiodiniaceae-in-juvenile-octocoral/")
+```
+
+::: panel-tabset
+## Figure 1
+
+### *STEP 1* setting up and Loading required packages
+
+```{r, echo=FALSE, warning=FALSE}
+#set folder if required to 
+#setwd("C:/Users/Ronen/Documents/PhD/Konstanz Collaboration/Genomic data/symportal/profiles") 
+
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load("ggplot2", "dplyr","plyr","ggsci", "reshape2", "MCMC.OTU", "vegan", "edgeR", "tidyverse",
+               "gt", "vegan", "pairwiseAdonis", "RColorBrewer", "Redmonder","ggpubr", "rmarkdown","gridExtra", "grid", "cowplot")
+
+if (!require("edgeR")){BiocManager::install("edgeR", update = FALSE) 
+  library(edgeR)}
+```
+
+### *STEP 2* We can now look at the ITS2 type profiles predicted by SymPortal.
+
+load Symportal and merge it with my metadata normalize it
+
+```{r, echo=TRUE, warning=FALSE,results='hide'}
+
+profRAW = read.delim("raw_files/BarPlot/203_20220411_03_DBV_20220412T020330.profiles.absolute.abund_only.txt", header = TRUE, check.names = FALSE)
+head(profRAW)
+
+#View(profRAW)
+MetaData = read.csv("raw_files/BarPlot/Metadata1.csv")  ### Loading metadata 
+head(MetaData)
+
+p.Seq= merge(MetaData,profRAW,  by="sample_uid", all = T)  #merge both df by sampled number 
+#View(p.Seq)
+
+p.Seq$collection_depth <- as.factor(p.Seq$collection_depth)
+p.Seq$Sampling.period <- as.factor(p.Seq$Sampling.period) 
+
+# Normalization steps according to raw read numbers
+
+its2ProfsTransposed = t(p.Seq[, 6:length(p.Seq[1, ])]) #columns 6: are where the raw read start, after the metadata columns
+
+its2ProfsList = DGEList(counts = its2ProfsTransposed)
+head(its2ProfsList$samples)
+
+its2ProfsNorm =  calcNormFactors(its2ProfsList, method = "TMM")
+head(its2ProfsNorm$samples)
+its2TMM = t(cpm(its2ProfsNorm, normalized.lib.sizes = TRUE))
+its2ProfsNorm = cbind(p.Seq[,c(1:5)], its2TMM) #columns 1:5 are the metadata columns 
+
+head(its2ProfsNorm) # look at it 
+
+```
+
+### *Step 3* Preparing ITS2 type profiles for plotting
+
+```{r, echo=TRUE, warning=FALSE,results='hide'}
+
+colOrder2 = order(colSums(its2ProfsNorm[6:length(its2ProfsNorm[1,])]), decreasing = TRUE) +5
+
+its2ProfsPerc = cbind(its2ProfsNorm[,c(1:5)],its2ProfsNorm[,c(colOrder2)])
+its2ProfsPerc$sum = apply(its2ProfsPerc[, c(6:length(its2ProfsPerc[1,]))], 1, function(x) {
+  sum(x, na.rm = T)
+})
+
+its2ProfsPerc = cbind(its2ProfsPerc[, c(1:5)], (its2ProfsPerc[, c(6:(ncol(its2ProfsPerc)-1))] 
+                                                / its2ProfsPerc$sum))
+head(its2ProfsPerc)
+##verifying that sum OTU of each sample = 1 (100%)
+apply(its2ProfsPerc[, c(6:(ncol(its2ProfsPerc)))], 1, function(x) {
+  sum(x, na.rm = T)
+})
+#view(its2ProfsPerc)
+
+gssProf = otuStack(its2ProfsPerc, count.columns = c(6:length(its2ProfsPerc[1, ])),
+                   condition.columns = c(1:5))[1:3133,] # remove summ rows
+
+```
+
+### *Step 4* Organizing the data according to the way I would like to visualize it
+
+In this case all the values in each time point and depth will be visualized using one pooled bar.
+
+```{r, echo=TRUE, warning=FALSE}
+
+prf <- gssProf %>%  ## remove summ rows that have been created during normalization steps 
+  filter(otu!="summ")%>%                                            
+  
+  mutate(Depthgroup = fct_relevel(collection_depth, "10", "40"))%>%  # level shallow first then MCE
+  mutate(Age = fct_relevel(Sampling.period, "1_week", "2_Months", "5_Months","7_Months","11_Months")) 
+head(prf)
+
+#change the profile names  of the legend to the ones I want on the plot using the file "Our profiles" 
+lab= read.csv("C:/Users/Ronen/Documents/PhD/Konstanz Collaboration/Genomic data/symportal/profiles/Our Profiles.csv")
+
+colnames(lab)[1]<- "otu"
+
+mergd_for_lab= merge(lab,prf,  by="otu", all = T)
+head(mergd_for_lab)
+
+#Organize the factor according to the way I would like to view them on the plot
+
+levels(mergd_for_lab$Age) <- c("1-week", "2-Month", "5-Month","7-Month","11-Month")
+levels(mergd_for_lab$collection_depth) <- c("Shallow","MCE")
+
+# look at the file
+View(mergd_for_lab)
+```
+
+Additional data organization according to the way I'd plot visualize the data
+
+```{r, echo=TRUE, warning=FALSE}
+new_abund <- mergd_for_lab %>% 
+  group_by(Age,treatment,clustered.type) %>% 
+  mutate(rel= count/ n_distinct(sample_uid)) #calculating relative abundance per group 
+
+#write.csv(file="add_factors", new_abund)
+new_df <- read.csv("C:/Users/Ronen/Documents/PhD/Konstanz Collaboration/Genomic data/symportal/profiles/factors_added_changed.csv") ## another metadata file to create the reciprocal experminet plot 
+head(new_df)
+
+# change end and source into factors 
+df <- new_df %>%  
+  #rename(c("Age" = "time")) %>% 
+  mutate(end = as.factor(end)) %>% 
+  mutate(source= as.factor(source))
+#View(df)
+
+#write.csv(file="relative abundance of profiles in juveniles", df) #export
+
+  n_df <- mutate(df, clustered.type = fct_recode(clustered.type, "A1-A1bw-A1bf" = "A1" , "Other Symbiodinium"="Other_Symbiodinium", "Breviolum B1"="B1", 
+                                     "Cladocopium C1 + C. thermophilum mix" ="C1_and_mix"  , "Cladocopium C1-C1dw" ="Cladocopium_C1"  , "C64a/C64b" = "C64a/C64b" ,
+                                      "Durusdinium D1-D4"="D1_D4" , "Other Durusdinium"= "Other_Durusdinium", "F3m"="F3m"))
+
+
+depth_levels <- c("Shallow","MCE") # in order to have the shallow above MCE
+
+Profile_levels <- c("A1-A1bw-A1bf" ,"Other Symbiodinium","Breviolum B1", "Cladocopium C1 + C. thermophilum mix" , "Cladocopium C1-C1dw", "C64a/C64b","Durusdinium D1-D4","Other Durusdinium","F3m")
+#time_levels <- c("1-week", "2-Month", "5-Month","7-Month","11-Month")
+
+n_df$source<- factor(n_df$source,depth_levels)  #set correct levels 
+n_df$end<- factor(n_df$end,depth_levels)        #set correct levels 
+n_df$clustered.type<- factor( n_df$clustered.type,Profile_levels)  #set correct levels 
+#levels(n_df$clustered.type) #check levels
+
+Sum_this <-   n_df %>% 
+  group_by(time,end,source,clustered.type) %>% 
+  dplyr::summarise(general_sum= sum(rel), n=n()) %>% 
+  ungroup()
+ 
+head(Sum_this) #This df will be used to make Figure1 
+
+```
+
+### *Step 5* Making Supp. Table S1: Relative abundace of algal type profile at each time point from each treatment
+
+```{r Table1, echo=TRUE, warning=FALSE, include=FALSE}
+
+tab <- Sum_this[apply(Sum_this!=0, 1, all),]
+
+tab$source.end <- paste(tab$source, tab$end, sep =" in ")
+tab$clustered.type <- as.factor(tab$clustered.type)
+levels(tab$source.end)
+
+# in order to have the right order
+fct_levels <- c("Shallow in Shallow","Shallow in MCE", "MCE in Shallow", "MCE in MCE")
+tab$source.end<- factor(tab$source.end,fct_levels) 
+
+# change relative to perc. (%) 
+tab$general_sum <- 100* tab$general_sum 
+
+tab_1 <-  tab %>%  
+  filter(general_sum >=1) %>% #dont include reads lower than 1% 
+  select(c(-source,-end,-n)) %>% 
+ pivot_wider(names_from = "source.end" ,values_from ="general_sum")
+
+glimpse(tab_1)
+#view(tab_1)
+#write.csv(file = "data for table1_wide.csv", tab_1)
+```
+
+### *Step 6* Plotting the data
+
+Here I First create individual plots for each time point, I also add a the data for the adult colonies. Then I put them together into one plot.
+
+```{r Plotting, echo=TRUE, warning=FALSE, include=FALSE}
+
+glimpse(Sum_this)
+
+dat_try <- Sum_this %>% 
+  mutate(treatment = paste(source,end, sep = "_"))
+
+# Create factor of treatment in new order  
+dat_try$treatment <- factor(dat_try$treatment, 
+                            levels = c("Shallow_Shallow", "Shallow_MCE", "MCE_Shallow", "MCE_MCE"),
+                            labels = c("Shallow in Shallow", "Shallow in MCE", "MCE in Shallow", "MCE in MCE"))
+
+head(dat_try)
+
+p <- ggplot(dat_try, aes(x = as.factor(time), y = 100*general_sum, fill = factor(clustered.type))) +
+  geom_bar(position = "stack", stat = "identity", color = "black", width=1) + 
+  labs(y= "Relative abundance (%)", x = "Juvenile age (month)") + 
+  scale_fill_manual( values=c('A1-A1bw-A1bf' = '#045a8d', 'Other Symbiodinium'= '#bdc9e1',
+                              "Breviolum B1"= 'gray75',
+                              "Cladocopium C1 + C. thermophilum mix"='#ffffcc',"Cladocopium C1-C1dw"  = '#c2e699',"C64a/C64b"= '#006837', 
+                              "Durusdinium D1-D4"= '#d7301f', 'Other Durusdinium' ='#fdcc8a','F3m' =  '#d7b5d8'))+
+  
+  # scale_fill_manual(values = getPalette2(colorCount2)[3:21])+
+  labs(fill = expression(paste(italic("ITS2"), " type profile"))) +
+  guides(fill = guide_legend(ncol = 1, reverse = FALSE)) +
+  #scale_x_continuous(breaks = time_points)+
+  # scale_fill_manual(values=rev(getPalette(colorCount2)))+
+  facet_wrap(.~treatment, ncol = 1)+
+  theme_bw()
+p
+
+###adding metadata num of polyp in each bar 
+#use file = metadata_figure_1_review.csv
+meta <- read.csv("C:/Users/Ronen/Documents/PhD/Konstanz Collaboration/Writing a Draft/Review/figure 1 revised/metadata_figure_1_review.csv")
+head(meta)
+
+# Rename in meta
+names(meta)[names(meta) == "n"] <- "n_polyp"
+
+# Join  
+plot_data <- left_join(dat_try, meta, by = c("time", "treatment"))
+# Create factor of treatment in new order  
+plot_data$treatment <- factor(plot_data$treatment, 
+                            levels = c("Shallow in Shallow", "Shallow in MCE", "MCE in Shallow", "MCE in MCE"))
+head(plot_data)
+# Plot
+p1 <- ggplot(data = plot_data, 
+            mapping = aes(x = as.factor(time), y = 100*general_sum, fill = clustered.type)) +
+  geom_bar(position = "stack", stat = "identity", color = "black", width=0.9) + 
+  labs(y= "Relative abundance (%)", x = "Juvenile age (month)") + 
+  scale_fill_manual( values=c('A1-A1bw-A1bf' = '#045a8d', 'Other Symbiodinium'= '#bdc9e1',
+                              "Breviolum B1"= 'gray75',
+                              "Cladocopium C1 + C. thermophilum mix"='#ffffcc',"Cladocopium C1-C1dw"  = '#c2e699',"C64a/C64b"= '#006837', 
+                              "Durusdinium D1-D4"= '#d7301f', 'Other Durusdinium' ='#fdcc8a','F3m' =  '#d7b5d8'))+
+  
+  # scale_fill_manual(values = getPalette2(colorCount2)[3:21])+
+  labs(fill = expression(paste(italic("ITS2"), " type profile"))) +
+  guides(fill = guide_legend(ncol = 1, reverse = FALSE)) +
+  #scale_x_continuous(breaks = time_points)+
+  # scale_fill_manual(values=rev(getPalette(colorCount2)))+
+  facet_wrap(.~treatment, ncol = 1)+
+  theme_bw()
+p1
+# Add n_polyp label >> i do this manually 
+p_add =  p1 +
+  theme(
+        axis.title.y = element_text(color = "black", size = 12),
+        axis.text.y = element_text(color = "black", size = 12),
+        axis.text.x = element_text(color = "black", size = 12),
+        axis.title.x = element_text(color = "black", size = 12),
+        strip.placement = "center",
+        legend.position = "bottom",
+        legend.title = element_blank(),
+        legend.text = element_text(color = "black", size = 10),
+        legend.key = element_blank(),
+        legend.key.size = unit(0.3,"line"),
+        legend.background = element_rect(fill = "gray90", linewidth = 0.75),
+        panel.border = element_blank(),
+        panel.background = element_rect(fill = "white"),
+        plot.background = element_blank(),
+        # strip.text.x = element_text(size = 10), #face = "italic"),
+        #strip.text.y = element_text(size = 10),
+        strip.text = element_text(
+          size = 10,
+          margin = margin(5,5,7,5)),
+        strip.background = element_rect(fill = "white", linewidth = 0.8)
+  )+
+  guides(fill = guide_legend(nrow = 2,ncol=11, reverse = FALSE)) 
+p_add
+
+p_ex.1 <- p_add+ theme(legend.position = "none")
+
+#### Here I add the data for the adults from Liberman et al. 2022. I Include this data into the figure
+
+# getting adult metadata
+#usi file = "all_adults_purged.csv"
+adult <- read.csv("~/PhD/Konstanz Collaboration/Genomic data/symportal/profiles/Adults/all_adults_purged.csv")
+
+#adult <- read.csv("raw_files/BarPlot/all_adults_purged.csv")
+#select for R. fulvum data
+ad <- adult %>% 
+  filter(Species=="R. fulvum") 
+head(ad)
+#use file = Adults_real_type profile.csv")
+ex.dat= read.csv("~/PhD/Konstanz Collaboration/Genomic data/symportal/profiles/Adults/Adults_real_type profile.csv")
+
+#head(ex.dat)
+colnames(ex.dat)[1]<- "otu"
+
+merge.adult= merge(ex.dat,ad,  by="otu", all = T)
+
+merge.adult = merge.adult %>% 
+  rename(c("ITS2.type.profile" = "clustered.type", "Depthgroup"="end")) %>% 
+  filter(otu!="summ") 
+
+merge.adult$treatment <- "Adult"
+#View(merge.adult)
+
+#summerzie into one column
+Sum_adult <- merge.adult %>% 
+  group_by(end,clustered.type) %>% 
+  mutate(rel= count/ n_distinct(sample_uid))%>% 
+  group_by(Genus,end,clustered.type) %>% 
+  dplyr::summarise(general_sum= sum(rel))  
+
+Sum_adult$treatment = "Adult" #add the "treatment"
+
+Sum_adult[Sum_adult==0] <- NA #ADD NA instead of zero's
+
+# level shallow first then MCE
+Sum_adult$end<- as.factor(Sum_adult$end)
+Sum_adult=Sum_adult %>% 
+  mutate(end = fct_relevel(end, c("Shallow","MCE")))
+levels(as.factor(Sum_adult$clustered.type))
+
+adult_p = ggplot(Sum_adult , aes(x = Genus , y = 100*general_sum, fill = factor(clustered.type))) +
+  geom_bar(position = "stack", stat = "identity", color = "black", size = 0.25) + 
+  ylab("Relative abundance (%)") +
+  # scale_fill_manual(values = color_palette_20)+
+  scale_fill_manual( values=c("C1-C1dw-C3dx"= '#31a354' , 'C64a-C64b'= '#006837'))+
+  # scale_fill_manual(values=getPalette(colorCount))+
+  
+  # scale_fill_manual(values = getPalette2(colorCount2)[3:21])+
+  labs(fill = expression(paste(italic("ITS2"), " type profile"))) +
+  guides(fill = guide_legend(ncol = 1, reverse = FALSE)) +
+  # scale_fill_manual(values=rev(getPalette(colorCount2)))+
+  facet_grid(cols=vars(treatment),rows=vars(end), switch = "y")+
+  theme_bw()
+
+adult_p_add =  adult_p +
+  theme(axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.title.y = element_text(color = "black", size = 10),
+        axis.text.y = element_text(color = "black", size = 10),
+        strip.placement = "outside",
+        legend.position = "bottom",
+        legend.title = element_blank(),
+        legend.text = element_text(color = "black", size = 10),
+        legend.key = element_blank(),
+        legend.key.size = unit(0.3,"line"),
+        legend.background = element_rect(fill = "gray90", linewidth = 0.75),
+        panel.border = element_blank(),
+        panel.background = element_rect(fill = "white"),
+        plot.background = element_blank(),
+       # strip.text.x = element_text(size = 10), #face = "italic"),
+        #strip.text.y = element_text(size = 10),
+        strip.text = element_text(
+          size = 10,
+          margin = margin(5,5,10,5)),
+        strip.background = element_rect(fill = "white", linewidth = 0.8)
+  )+
+  guides(fill = guide_legend(nrow = 1, reverse = FALSE)) 
+adult_p_add
+
+```
+
+### *STEP 7* Merge all the plots into one
+```{r Merge plots into one}
+
+p_together <- ggarrange(
+  p_add +
+    theme(panel.grid.major = element_blank(),
+                panel.grid.minor = element_blank(),
+                panel.background = element_blank()),
+  
+  adult_p_add + 
+    theme(axis.text.y = element_blank(),
+          axis.ticks.y = element_blank(),
+          axis.title.y = element_blank(),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          panel.border = element_blank(),
+          panel.background = element_blank()),
+  
+  common.legend = TRUE, 
+  legend = "none",
+  
+  nrow = 1,
+  # Make left plot wider
+  widths = c(0.8, 0.2) 
+)
+
+p_together
+
+#EXPORT
+ggsave(filename = "Figure 1_review version.tiff", plot = p_together,width =25 , height = 20,dpi=600, 
+       units = "cm")
+```
+
+### Old Version of this plot
+First submission version
+
+```{r OLD,eval=FALSE, include=FALSE}
+#time point 1
+first_week <- Sum_this %>% 
+  filter(time== "1")
+head(first_week)
+
+first_time = ggplot( first_week, aes(x = time, y = 100*general_sum, fill = factor(clustered.type))) +
+  geom_bar(position = "stack", stat = "identity", color = "black", size = 0.25) + 
+  ylab("Relative abundance (%)") +
+  # scale_fill_manual(values = color_palette_20)+
+  scale_fill_manual( values=c('A1-A1bw-A1bf' = '#045a8d', 'Other Symbiodinium'= '#bdc9e1',
+                              "Breviolum B1"= 'gray75',
+                              "Cladocopium C1 + C. thermophilum mix"='#ffffcc',"Cladocopium C1-C1dw"  = '#c2e699',"C64a/C64b"= '#006837', 
+                              "Durusdinium D1-D4"= '#d7301f', 'Other Durusdinium' ='#fdcc8a','F3m' =  '#d7b5d8'))+
+  
+  # scale_fill_manual(values = getPalette2(colorCount2)[3:21])+
+  labs(fill = expression(paste(italic("ITS2"), " type profile"))) +
+  guides(fill = guide_legend(ncol = 1, reverse = FALSE)) +
+  # scale_fill_manual(values=rev(getPalette(colorCount2)))+
+  facet_grid(cols=vars(source),rows=vars(end), switch = "y")+
+  theme_bw()
+
+
+first_time_add =  first_time +
+  theme(axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.title.y = element_text(color = "black", size = 12),
+        axis.text.y = element_text(color = "black", size = 14),
+        strip.placement = "outside",
+        legend.position = "bottom",
+        legend.title = element_blank(),
+        legend.text = element_text(color = "black", size = 10),
+        legend.key = element_blank(),
+        legend.key.size = unit(0.3,"line"),
+        legend.background = element_rect(fill = "gray90", size = 0.75),
+        panel.border = element_blank(),
+        panel.background = element_rect(fill = "white"),
+        plot.background = element_blank(),
+        strip.text.x = element_text(size = 12), #face = "italic"),
+        strip.text.y = element_text(size = 12),
+        strip.background = element_rect(fill = "white", size = 0.9)
+  )+
+  guides(fill = guide_legend(nrow = 2,ncol=11, reverse = FALSE)) 
+first_time_add
+
+#export plot - with legend 
+#ggsave(filename = "new_look_first week", plot = first_time_add, device = "tiff", width =20 , height = 10,dpi=600, 
+ #      units = "cm")
+p_ex.1 <- first_time_add+ theme(legend.position = "none")
+
+#time point 2
+sec <- Sum_this %>% 
+  filter(time == "2")
+view(sec)
+
+sec_time = ggplot( sec, aes(x = time, y = 100*general_sum, fill = factor(clustered.type))) +
+  geom_bar(position = "stack", stat = "identity", color = "black", size = 0.25) + 
+  ylab("Relative abundance (%)") +
+  # scale_fill_manual(values = color_palette_20)+
+  scale_fill_manual( values=c('A1-A1bw-A1bf' = '#045a8d', 'Other Symbiodinium'= '#bdc9e1',
+                              "Breviolum B1"= 'gray75',
+                              "Cladocopium C1 + C. thermophilum mix"='#ffffcc',"Cladocopium C1-C1dw"  = '#c2e699',"C64a/C64b"= '#006837', 
+                              "Durusdinium D1-D4"= '#d7301f', 'Other Durusdinium' ='#fdcc8a','F3m' =  '#d7b5d8'))+
+  # scale_fill_manual(values = getPalette2(colorCount2)[3:21])+
+  labs(fill = expression(paste(italic("ITS2"), " type profile"))) +
+  guides(fill = guide_legend(ncol = 1, reverse = FALSE)) +
+  # scale_fill_manual(values=rev(getPalette(colorCount2)))+
+  facet_grid(cols=vars(source),rows=vars(end), switch = "y")+
+  theme_bw()
+
+sec_time
+
+sec_time_add =  sec_time +
+  theme(axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.title.y = element_text(color = "black", size = 12),
+        axis.text.y = element_text(color = "black", size = 12),
+        strip.placement = "outside",
+        legend.position = "bottom",
+        legend.title = element_blank(),
+        legend.text = element_text(color = "black", size = 10),
+        legend.key = element_blank(),
+        legend.key.size = unit(0.3,"line"),
+        legend.background = element_rect(fill = "gray90", size = 0.75),
+        panel.border = element_blank(),
+        panel.background = element_rect(fill = "white"),
+        plot.background = element_blank(),
+        strip.text.x = element_text(size = 12), #face = "italic"),
+        strip.text.y = element_text(size = 12),
+        strip.background = element_rect(fill = "white", size = 0.9)
+  )+
+  guides(fill = guide_legend(nrow = 2,ncol=11, reverse = FALSE)) 
+sec_time_add
+
+p_ex.2 <- sec_time_add+ theme(legend.position = "none")
+
+#time point 3
+five <- Sum_this %>% 
+  filter(time == "5")
+#view(seven)
+
+five_time = ggplot( five, aes(x = time, y = 100*general_sum, fill = factor(clustered.type))) +
+  geom_bar(position = "stack", stat = "identity", color = "black", size = 0.25) + 
+  ylab("Relative abundance (%)") +
+  scale_fill_manual( values=c('A1-A1bw-A1bf' = '#045a8d', 'Other Symbiodinium'= '#bdc9e1',
+                              "Breviolum B1"= 'gray75',
+                              "Cladocopium C1 + C. thermophilum mix"='#ffffcc',"Cladocopium C1-C1dw"  = '#c2e699',"C64a/C64b"= '#006837', 
+                              "Durusdinium D1-D4"= '#d7301f', 'Other Durusdinium' ='#fdcc8a','F3m' =  '#d7b5d8'))+
+
+  labs(fill = expression(paste(italic("ITS2"), " type profile"))) +
+  guides(fill = guide_legend(ncol = 1, reverse = FALSE)) +
+
+  facet_grid(cols=vars(source),rows=vars(end), switch = "y")+
+  theme_bw()
+
+five_time
+
+five_time_add =  five_time +
+  theme(axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.title.y = element_text(color = "black", size = 12),
+        axis.text.y = element_text(color = "black", size = 12),
+        strip.placement = "outside",
+        legend.position = "bottom",
+        legend.title = element_blank(),
+        legend.text = element_text(color = "black", size = 10),
+        legend.key = element_blank(),
+        legend.key.size = unit(0.3,"line"),
+        legend.background = element_rect(fill = "gray90", size = 0.75),
+        panel.border = element_blank(),
+        panel.background = element_rect(fill = "white"),
+        plot.background = element_blank(),
+        strip.text.x = element_text(size = 12), #face = "italic"),
+        strip.text.y = element_text(size = 12),
+        strip.background = element_rect(fill = "white", size = 0.9)
+  )+
+  guides(fill = guide_legend(nrow = 2,ncol=11, reverse = FALSE)) 
+five_time_add
+
+p_ex.3 <- five_time_add+ theme(legend.position = "none")
+
+#time point 4
+seven <- Sum_this %>% 
+  filter(time == "7")
+view(seven)
+
+seven_time = ggplot( seven, aes(x = time, y = 100*general_sum, fill = factor(clustered.type))) +
+  geom_bar(position = "stack", stat = "identity", color = "black", size = 0.25) + 
+  ylab("Relative abundance (%)") +
+  # scale_fill_manual(values = color_palette_20)+
+  scale_fill_manual( values=c('A1-A1bw-A1bf' = '#045a8d', 'Other Symbiodinium'= '#bdc9e1',
+                              "Breviolum B1"= 'gray75',
+                              "Cladocopium C1 + C. thermophilum mix"='#ffffcc',"Cladocopium C1-C1dw"  = '#c2e699',"C64a/C64b"= '#006837', 
+                              "Durusdinium D1-D4"= '#d7301f', 'Other Durusdinium' ='#fdcc8a','F3m' =  '#d7b5d8'))+
+  
+  # scale_fill_manual(values = getPalette2(colorCount2)[3:21])+
+  labs(fill = expression(paste(italic("ITS2"), " type profile"))) +
+  guides(fill = guide_legend(ncol = 1, reverse = FALSE)) +
+  # scale_fill_manual(values=rev(getPalette(colorCount2)))+
+  facet_grid(cols=vars(source),rows=vars(end), switch = "y")+
+  theme_bw()
+
+seven_time
+
+seven_time_add =  seven_time +
+  theme(axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.title.y = element_text(color = "black", size = 12),
+        axis.text.y = element_text(color = "black", size = 12),
+        strip.placement = "outside",
+        legend.position = "bottom",
+        legend.title = element_blank(),
+        legend.text = element_text(color = "black", size = 10),
+        legend.key = element_blank(),
+        legend.key.size = unit(0.3,"line"),
+        legend.background = element_rect(fill = "gray90", size = 0.75),
+        panel.border = element_blank(),
+        panel.background = element_rect(fill = "white"),
+        plot.background = element_blank(),
+        strip.text.x = element_text(size = 12), #face = "italic"),
+        strip.text.y = element_text(size = 12),
+        strip.background = element_rect(fill = "white", size = 0.9)
+  )+
+  guides(fill = guide_legend(nrow = 2,ncol=11, reverse = FALSE)) 
+seven_time_add
+
+p_ex.4 <- seven_time_add+ theme(legend.position = "none")
+
+#time point 5
+eleven <- Sum_this %>% 
+  filter(time == "11")
+view(eleven)
+
+#eleven$clustered.type <- as.factor(eleven$clustered.type)
+#levels(eleven$clustered.type)
+
+eleven_time = ggplot( eleven, aes(x = time, y = 100*general_sum, fill = clustered.type)) +
+  geom_bar(position = "stack", stat = "identity", color = "black", size = 0.25) + 
+  ylab("Relative abundance (%)") +
+  # scale_fill_manual( values=c('A1' = '#045a8d','A1-A1bf'='#2171b5','A10' ='#2b8cbe', 'A3'= '#bdc9e1', 'A4at' ='#d0d1e6',
+  #                            "B1-B1g-B1h-B1i-B1s"= 'gray75',
+  #                           "C1"= '#00441b',  "C1-C1dw-C3dx"='#006d2c',"C1/C1w"='#238b45',"C3" ='#66c2a4', 'C3/C1'= '#99d8c9','C3/C1-C3gulf-C1bz'='#c7eae5','C3dx' = '#e5f5e0','C64a'='#b3de69', 'C64a-C64b'= '#d9f0a3', 'C64b'= '#ccebc5',
+  #                          'D1-D4'= '#d7301f','D4c' = '#fc8d59', 'D5' ='#fdcc8a', 'D6' = '#fef0d9','F3m' =  '#d7b5d8'))+
+  scale_fill_manual( values=c('A1-A1bw-A1bf' = '#045a8d', 'Other Symbiodinium'= '#bdc9e1',
+                              "Breviolum B1"= 'gray75',
+                              "Cladocopium C1 + C. thermophilum mix"='#ffffcc',"Cladocopium C1-C1dw"  = '#c2e699',"C64a/C64b"= '#006837', 
+                              "Durusdinium D1-D4"= '#d7301f', 'Other Durusdinium' ='#fdcc8a','F3m' =  '#d7b5d8'))+
+  
+  # scale_fill_manual(values = color_palette_20)+
+  # scale_fill_manual(values=getPalette(colorCount))+
+  #238b45
+  # scale_fill_manual(values = getPalette2(colorCount2)[3:21])+
+  labs(fill = expression(paste(italic("ITS2"), " type profile"))) +
+  guides(fill = guide_legend(ncol = 1, reverse = FALSE)) +
+  # scale_fill_manual(values=rev(getPalette(colorCount2)))+
+  facet_grid(cols=vars(source),rows=vars(end), switch = "y")+
+  theme_bw()
+eleven_time
+
+eleven_time_add =  eleven_time +
+  theme(axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.title.y = element_text(color = "black", size = 12),
+        axis.text.y = element_text(color = "black", size = 12),
+        strip.placement = "outside",
+        legend.position = "bottom",
+        legend.title = element_blank(),
+        legend.text = element_text(color = "black", size = 10),
+        legend.key = element_blank(),
+        legend.key.size = unit(0.3,"line"),
+        legend.background = element_rect(fill = "gray90", size = 0.75),
+        panel.border = element_blank(),
+        panel.background = element_rect(fill = "white"),
+        plot.background = element_blank(),
+        strip.text.x = element_text(size = 12), #face = "italic"),
+        strip.text.y = element_text(size = 12),
+        strip.background = element_rect(fill = "white", size = 0.9)
+  )+
+  guides(fill = guide_legend(nrow = 2,ncol=11, reverse = FALSE)) 
+eleven_time_add
+
+p_ex.5 <- eleven_time_add+ theme(legend.position = "none")
+# getting adut metadat
+
+#adult <- read.csv("~/PhD/Konstanz Collaboration/Genomic data/symportal/profiles/Adults/all_adults_purged.csv")
+
+adult <- read.csv("raw_files/BarPlot/all_adults_purged.csv")
+#select for R. fulvum data
+ad <- adult %>% 
+  filter(Species=="R. fulvum") 
+head(ad)
+ex.dat= read.csv("raw_files/BarPlot/Adults_real_type profile.csv")
+#ex.dat= read.csv("~/PhD/Konstanz Collaboration/Genomic data/symportal/profiles/Adults/Adults_real_type profile.csv")
+
+#head(ex.dat)
+colnames(ex.dat)[1]<- "otu"
+
+merge.adult= merge(ex.dat,ad,  by="otu", all = T)
+
+merge.adult = merge.adult %>% 
+  rename(c("ITS2.type.profile" = "clustered.type", "Depthgroup"="end")) %>% 
+  filter(otu!="summ") 
+
+merge.adult$treatment <- "Adult"
+#View(merge.adult)
+
+#summerzie into one column
+Sum_adult <- merge.adult %>% 
+  group_by(end,clustered.type) %>% 
+  mutate(rel= count/ n_distinct(sample_uid))%>% 
+  group_by(Genus,end,clustered.type) %>% 
+  dplyr::summarise(general_sum= sum(rel))  
+
+Sum_adult$treatment = "Adult" #add the "treatment"
+
+Sum_adult[Sum_adult==0] <- NA #ADD NA instead of zero's
+
+view(Sum_adult)
+# level shallow first then MCE
+Sum_adult$end<- as.factor(Sum_adult$end)
+Sum_adult=Sum_adult %>% 
+  mutate(end = fct_relevel(end, c("Shallow","MCE")))
+levels(as.factor(Sum_adult$clustered.type))
+#View(Sum_adult)
+
+adult_p = ggplot(Sum_adult , aes(x = Genus , y = 100*general_sum, fill = factor(clustered.type))) +
+  geom_bar(position = "stack", stat = "identity", color = "black", size = 0.25) + 
+  ylab("Relative abundance (%)") +
+  # scale_fill_manual(values = color_palette_20)+
+  scale_fill_manual( values=c("C1-C1dw-C3dx"= '#31a354' , 'C64a-C64b'= '#006837'))+
+  # scale_fill_manual(values=getPalette(colorCount))+
+  
+  # scale_fill_manual(values = getPalette2(colorCount2)[3:21])+
+  labs(fill = expression(paste(italic("ITS2"), " type profile"))) +
+  guides(fill = guide_legend(ncol = 1, reverse = FALSE)) +
+  # scale_fill_manual(values=rev(getPalette(colorCount2)))+
+  facet_grid(cols=vars(treatment),rows=vars(end), switch = "y")+
+  theme_bw()
+
+adult_p
+
+adult_p_add =  adult_p +
+  theme(axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.title.y = element_text(color = "black", size = 12),
+        axis.text.y = element_text(color = "black", size = 12),
+        strip.placement = "outside",
+        legend.position = "bottom",
+        legend.title = element_blank(),
+        legend.text = element_text(color = "black", size = 10),
+        legend.key = element_blank(),
+        legend.key.size = unit(0.3,"line"),
+        legend.background = element_rect(fill = "gray90", size = 0.75),
+        panel.border = element_blank(),
+        panel.background = element_rect(fill = "white"),
+        plot.background = element_blank(),
+        strip.text.x = element_text(size = 12), #face = "italic"),
+        strip.text.y = element_text(size = 12),
+        strip.background = element_rect(fill = "white", size = 0.9)
+  )+
+  guides(fill = guide_legend(nrow = 1, reverse = FALSE)) 
+adult_p_add
+
+p_together <- ggarrange(p_ex.1+
+                          theme(
+                            panel.grid.major = element_blank(),
+                            panel.grid.minor = element_blank(),
+                            panel.background = element_blank()),
+                        p_ex.2+rremove("ylab")+
+                          theme(
+                            axis.text.y = element_blank(),
+                            axis.ticks.y = element_blank(),
+                            axis.title.y = element_blank(),
+                            panel.grid.major = element_blank(),
+                            panel.grid.minor = element_blank(),
+                            panel.border = element_blank(),
+                            panel.background = element_blank()),
+                        p_ex.3+ rremove("ylab")+
+                          theme(
+                            axis.text.y = element_blank(),
+                            axis.ticks.y = element_blank(),
+                            axis.title.y = element_blank(),
+                            panel.grid.major = element_blank(),
+                            panel.grid.minor = element_blank(),
+                            panel.border = element_blank(),
+                            panel.background = element_blank()),
+                        p_ex.4+rremove("ylab")
+                        +theme(
+                          axis.text.y = element_blank(),
+                          axis.ticks.y = element_blank(),
+                          axis.title.y = element_blank(),
+                          panel.grid.major = element_blank(),
+                          panel.grid.minor = element_blank(),
+                          panel.border = element_blank(),
+                          panel.background = element_blank()),
+                        p_ex.5+rremove("ylab")+theme(
+                          axis.text.y = element_blank(),
+                          axis.ticks.y = element_blank(),
+                          axis.title.y = element_blank(),
+                          panel.grid.major = element_blank(),
+                          panel.grid.minor = element_blank(),
+                          panel.border = element_blank(),
+                          panel.background = element_blank()),
+                        adult_p_add+rremove("ylab")+theme(
+                          axis.text.y = element_blank(),
+                          axis.ticks.y = element_blank(),
+                          axis.title.y = element_blank(),
+                          panel.grid.major = element_blank(),
+                          panel.grid.minor = element_blank(),
+                          panel.border = element_blank(),
+                          panel.background = element_blank()),
+                        common.legend = TRUE, legend = "bottom", 
+                        nrow = 1,widths = c(0.3, 0.25,0.25,0.25,0.25,0.15))      #select for similar size in all plots 
+p_together
+
+#EXPORT
+#ggsave(filename = "All together_profile", plot = p_together, device = "tiff", width =30 , height = 10,dpi=600, 
+#       units = "cm")
+```
+
+
+## Figure2
+
+### *Step 1* PCoA of Algal symbiotns in juvenile and Adults
+
+Here I first select for Data of Cladocopium + adult colonies and then create its pcoA. The I will select Symbiodinium and Durusdinium, respectivly, and create PCoA. In the final step I combine plots.
+
+Loading libraries and data
+
+```{r, echo=TRUE, warning=FALSE,results='hide'}
+
+library(tibble)
+library(ape)
+library(stringr)
+
+#setwd("C:/Users/Ronen/Documents/PhD/Konstanz Collaboration/symportal/PcoA/With parents/")
+
+#Adult colonies PCOA data
+its2_parents = read.delim(
+  "raw_files/pcoA/177_20210916_all_03_DBV_20210917T005252.seqs.absolute.abund_only.txt", header = TRUE, check.names = FALSE)
+
+#Juvenile PCOA data
+its2_poly=read.delim("raw_files/pcoA/203_20220411_03_DBV_20220412T020330.seqs.absolute.abund_only.txt", header = TRUE, check.names = FALSE) 
+
+its2_poly2 <- its2_poly[,-1]
+rownames(its2_poly2) <- its2_poly[,1]
+
+##Selecting for only The Rhytisma parental colonies
+
+Rhy_parents <- its2_parents %>% filter(sample_uid == "135462" | sample_uid == "135463" | sample_uid == "135464"
+                |sample_uid == "135465"|sample_uid == "135466"| sample_uid == "135467" | sample_uid == "135468"|
+                  sample_uid == "135468" | sample_uid == "135469" |sample_uid =="135493"|sample_uid =="135494"|sample_uid =="135495"
+                |sample_uid =="135496")
+
+#Selecting for CLADOCOPIUM only
+
+Clado <- its2_poly2 %>% select(contains("C"))
+
+head(Clado)
+#this got us close, but ot only --- manually check showed we have 4 A and B that has c in the name so I need exclude the first 4 column too
+
+Clado <- Clado[c(5:154)]
+
+#View(Clado) - check 
+
+its2_poly <- tibble::rownames_to_column(Clado, "sample_uid") #merge two df's
+head(its2_poly)
+
+df_list <- list(its2_poly, Rhy_parents) #DF's into list
+
+Counts <- Reduce(function(x, y) merge(x, y, all=TRUE), df_list)  #merge all data frames in list
+
+#IMPORTANT - Re-check, comparing counts of any random sample
+Chek1 <-its2_parents %>% filter(sample_uid == "135462") 
+Chek2 <-Counts %>% filter(sample_uid == "135462") #C1 = 11324
+Chek1$C1  #C1 = 11324
+Chek2$C1  #C1 = 11324
+# good , similar counts#
+
+Counts <- Counts %>% mutate_all(~replace(., is.na(.), 0))
+
+# Only numbers are allowed in the bray Curtis function
+NO_ID <- Counts[,-1] #- putting sample names as rownames
+rownames(NO_ID) <- Counts[,1]
+
+
+bray_curtis_dist <- vegan::vegdist(NO_ID, method = "bray") # Calculate bray curtis distances 
+
+bray_curtis_pcoa <- ape::pcoa(bray_curtis_dist)
+
+# But we only need the first two to demonstrate what we can do:
+bray_curtis_pcoa_df <- data.frame(pcoa1 = bray_curtis_pcoa$vectors[,1], 
+                                  pcoa2 = bray_curtis_pcoa$vectors[,2])
+
+# The variance expland by the coordinates 
+PCoA_values= bray_curtis_pcoa$values$Relative_eig
+
+```
+
+### *Step 2* Making TWO-factorPCoA plots
+
+```{r TWO-factorPCoA, echo=TRUE}
+
+meta <- read.csv("raw_files/pcoA/Metadata_Adult_And_Pol.csv") #load metadata for both juvenile and adults
+
+bray_samples_status_pcoa_df <- cbind(bray_curtis_pcoa_df,
+                                          meta)
+head(bray_samples_status_pcoa_df)
+
+bray_samples_status_pcoa_df$Sampling.period <- factor(bray_samples_status_pcoa_df$Sampling.period, levels= c('1_week', '2_Months','5_Months','7_Months','10_Months','11_Months','Adult'))  #level according to the order I want
+                                                                           
+
+bray_samples_status_pcoa_df = bray_samples_status_pcoa_df %>% 
+  mutate(collection_depth = as.factor(collection_depth)) %>% 
+  rename(c("collection_depth" = "Depth")) 
+
+# Changing names of factors and organizig them in the order I want
+
+bray_samples_status_pcoa_df$Sampling.period <- str_replace(bray_samples_status_pcoa_df$Sampling.period, "1_week", "1 week")
+bray_samples_status_pcoa_df$Sampling.period <-str_replace_all(bray_samples_status_pcoa_df$Sampling.period, "2_Months", "2 Months")
+bray_samples_status_pcoa_df$Sampling.period <-str_replace_all(bray_samples_status_pcoa_df$Sampling.period, "2_Months", "2 Months")
+bray_samples_status_pcoa_df$Sampling.period <-str_replace_all(bray_samples_status_pcoa_df$Sampling.period, "5_Months", "5 Months")
+bray_samples_status_pcoa_df$Sampling.period <-str_replace_all(bray_samples_status_pcoa_df$Sampling.period, "7_Months", "7 Months")
+bray_samples_status_pcoa_df$Sampling.period <-str_replace_all(bray_samples_status_pcoa_df$Sampling.period, "11_Months", "11 Months")
+bray_samples_status_pcoa_df$Sampling.period <-str_replace_all(bray_samples_status_pcoa_df$Sampling.period, "Adult" , "Adults")
+bray_samples_status_pcoa_df$Sampling.period
+
+
+bray_samples_status_pcoa_df$Sampling.period <- factor(bray_samples_status_pcoa_df$Sampling.period, levels= c('1 week', '2 Months','5 Months','7 Months','11 Months', 'Adults'))
+
+#COLORS 
+colorBlindGrey6   <- c("#999999", "#E69F00", "#56B4E9", "#009E73", 
+                       "#D55E00", "#CC79A7")
+
+#Code of the figure 
+pco_two_fac <- ggplot(data = bray_samples_status_pcoa_df, 
+                      aes(x=pcoa1, y=pcoa2,
+                          shape= Depth, color = Sampling.period )) +
+  scale_shape_manual(values = c(16:18)) +
+  scale_color_manual(values =colorBlindGrey6)+
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_vline(xintercept = 0, lty = 2) +
+  labs(x = "45%",
+       y = "20%") +
+  # geom_hline(yintercept = 0, lty = 2) +
+  #geom_vline(xintercept = 0, lty = 2) +
+  guides(color = guide_legend(title = "Time following settelment")) +
+  geom_point(alpha = 0.8, size = 4) +
+  theme(title = element_text(size = 12)) # makes titles smaller
+pco_two_fac
+
+p1 <- pco_two_fac +
+  theme_minimal() +
+  theme(panel.grid = element_blank(), 
+        panel.border = element_rect(fill= "transparent"),
+        axis.line = element_line(colour = "black"),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
+        panel.background = element_blank(),
+        axis.title =element_text(size=12),
+        axis.text=element_text(color="black", size=12),
+        axis.text.x=element_blank(), #remove x axis labels
+        axis.ticks.x=element_blank(), #remove x axis ticks
+        axis.text.y=element_blank(),  #remove y axis labels
+        axis.ticks.y=element_blank()  #remove y axis ticks
+  )
+p1
+PCOA_cladocopium_two_fac = p1
+
+```
+
+### *Step 2* CONTINIUE: After Making the CLADOCOPIUM PCoA i also want to do similar to the other two Generas
+
+However here I dont have adults with such a genera
+
+**Symbiodinium** :
+
+```{r, echo=TRUE}
+dt <- read.csv("raw_files/pcoA/20220412T020330_braycurtis_samples_PCoA_coords_A_sqrt.csv",
+      header = TRUE)
+
+MetaData = read.csv("raw_files/pcoA/Metadata.csv",header = TRUE)
+
+head(dt)
+merged_bray= merge(MetaData,dt,  by=c("sample","sample_uid"))
+                                        
+head(merged_bray)
+# Creates a plot
+merged_bray = merged_bray %>% 
+  mutate(collection_depth = as.factor(collection_depth)) %>% 
+  mutate(Sampling.period = as.factor(Sampling.period)) %>% 
+  rename(c("collection_depth" = "Depth")) 
+
+View(merged_bray)
+colorBlindGrey5   <- c("#999999", "#E69F00", "#56B4E9", "#009E73", 
+                       "#D55E00" )
+#levels(merged_bray$Sampling.period)
+
+merged_bray$Sampling.period <- factor(merged_bray$Sampling.period, levels= c('1_week', '2_Months','5_Months','7_Months','11_Months'))
+                                                                                                            
+########## pco plot for two factors
+#View(merged_bray)
+pco_two_fac <- ggplot(data = merged_bray, 
+                      aes(x=PC1, y=PC2,
+                          shape= Depth, color = Sampling.period )) +
+  scale_shape_manual(values = c(16:18)) +
+  scale_color_manual(values =colorBlindGrey5)+
+  labs(x = "27%",
+       y = "21%") +
+   geom_hline(yintercept = 0, lty = 2) +
+  geom_vline(xintercept = 0, lty = 2) +
+  geom_point(alpha = 0.8)+
+  guides(color = guide_legend(title = "Time following settelment")) +
+  geom_point(alpha = 0.8, size = 4) +
+  theme(title = element_text(size = 12)) # makes titles smaller
+pco_two_fac
+
+p2 <- pco_two_fac +
+  
+  xlab("27%") + 
+  
+  ylab("21%") +
+  
+  theme_minimal() +
+  
+  theme(panel.grid = element_blank(), 
+        panel.border = element_rect(fill= "transparent"),
+        axis.line = element_line(colour = "black"),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
+        panel.background = element_blank(),
+        axis.title =element_text(size=12),
+        axis.text=element_text(color="black", size=12),
+        axis.text.x=element_blank(), #remove x axis labels
+        axis.ticks.x=element_blank(), #remove x axis ticks
+        axis.text.y=element_blank(),  #remove y axis labels
+        axis.ticks.y=element_blank()  #remove y axis ticks
+  )
+p2
+PCOA_symbiodinium_two_fac = p2
+
+```
+
+**Durusdinium**:
+
+```{r, echo=TRUE}
+
+dt <- read.csv("raw_files/pcoA/20220412T020330_braycurtis_samples_PCoA_coords_D_sqrt.csv",header = TRUE)
+
+#View(dt)
+MetaData = read.csv("raw_files/pcoA/Metadata.csv",header = TRUE)
+
+merged_bray= merge(MetaData,dt,  by=c("sample","sample_uid"))
+
+merged_bray = merged_bray %>% 
+  mutate(collection_depth = as.factor(collection_depth)) %>% 
+  mutate(Sampling.period = as.factor(Sampling.period)) %>% 
+  rename(c("collection_depth" = "Depth")) 
+
+#levels(merged_bray$Sampling.period)
+
+merged_bray$Sampling.period <- factor(merged_bray$Sampling.period, levels= c('1_week', '2_Months','5_Months','7_Months','11_Months'))
+
+
+colorBlindGrey5   <- c("#999999", "#E69F00", "#56B4E9", "#009E73", 
+                       "#D55E00" )
+
+pco_two_fac <- ggplot(data = merged_bray, 
+                      aes(x=PC1, y=PC2,
+                          shape= Depth, color = Sampling.period )) +
+  scale_shape_manual(values = c(16:18)) +
+  scale_color_manual(values =colorBlindGrey5)+
+  labs(x = "24%",
+       y = "17%") +
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_vline(xintercept = 0, lty = 2) +
+  geom_point(alpha = 0.8)+
+  guides(color = guide_legend(title = "Time following settelment")) +
+  geom_point(alpha = 0.8, size = 4) +
+  theme(title = element_text(size = 12)) # makes titles smaller
+pco_two_fac
+
+p3 <- pco_two_fac +
+  
+  xlab("24%") + 
+  
+  ylab("17%") +
+  
+  theme_minimal() +
+  
+  theme(panel.grid = element_blank(), 
+        panel.border = element_rect(fill= "transparent"),
+        axis.line = element_line(colour = "black"),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
+        panel.background = element_blank(),
+        axis.title =element_text(size=12),
+        axis.text=element_text(color="black", size=12),
+        axis.text.x=element_blank(), #remove x axis labels
+        axis.ticks.x=element_blank(), #remove x axis ticks
+        axis.text.y=element_blank(),  #remove y axis labels
+        axis.ticks.y=element_blank()  #remove y axis ticks
+  )
+p3
+PCOA_Durusdinium_two_fac = p3
+
+#ggsave(filename = "PCOA of durusdinium with collection.depth and time", plot = PCOA_symbiodinium_two_fac, device = "jpeg", width = 10, height = 7,dpi=600, 
+ #      units = "in")
+```
+
+### *Step 3* Combine all the plots into one Figure 2
+
+```{r}
+
+library(ggpubr)
+library(grid)
+library(gridExtra)
+library(gtable)
+
+p4=grid.arrange(p1,ncol=1 + theme(legend.position="none"), 
+             arrangeGrob( 
+                         p2 + theme(legend.position="none"), 
+                         p3 + theme(legend.position="none"),
+                         nrow = 1,ncol=2 ))
+
+p4
+
+#export
+
+#ggsave(filename = "PCOA of all.jpeg", plot = p4,  width = 18, height = 24,dpi=600, 
+ #      units = "cm")         
+
+
+```
+
+## Figure 3
+
+```{r libraries used, echo=FALSE}
+
+pacman::p_load(
+  rio,             # import/export
+  here,            # relative file paths
+  tidyverse,       # general data management and visualization
+  ape,             # to import and export phylogenetic files
+  ggtree,          # to visualize phylogenetic files
+  treeio,          # to visualize phylogenetic files
+  ggnewscale, ggtreeExtra,ggstar, remotes)      # to add additional layers of color schemes
+
+```
+
+### *Phylogenetic tree*
+
+Here I'm using ggtree package to build a circular phylogenetic tree of the non-coding region psbA. The phylogenetic values were created by IQTREE and therefore I am using the function related to this software, More Info: https://yulab-smu.top/treedata-book/chapter1.html
+
+```{r, echo=TRUE, warning=FALSE}
+
+iq= read.iqtree("raw_files/TREE_psbA/raw_data/all.psba.no27.wc3gulf.aligned.fasta.contree")
+#iq= read.iqtree("all.psba.no27.wc3gulf.aligned.fasta.contree")  
+
+tib_q <- as_tibble(iq)   ## look at the data in a table format  
+
+metdat <- import("raw_files/TREE_psbA/raw_data/phylo_dat_for_iqtree_new.csv") # import the metadata 
+
+metdat_2 <- metdat %>% 
+  rename(c("Source" = "group"))
+
+metdat_3 <- metdat_2 %>% 
+  mutate(name = as.factor(name)) %>%
+  mutate(name = fct_relevel(name, "2", "5","7","11", "na"))
+
+nw <- ggtree(iq, layout="fan", open.angle=15, size=0.3) #basic tree
+
+nw <- nw %<+% metdat_3  ## add metadata
+nw
+
+nw1 <- nw+ geom_tippoint(
+  mapping = aes(colour= Sample_origin),          # tip color by continent. You may change shape adding "shape = "
+  size = 1.5,alpha=0.8) +                             # define the size of the point at the tip
+scale_colour_brewer(
+    name = "Source",                    # name of your color scheme (will show up in the legend like this)
+    palette = "Set2", guide=guide_legend(keywidth=0.3,
+                                               keyheight=0.3,
+                                               ncol=2,
+                                               override.aes=list(size=2,alpha=1),
+                                               order=1)
+    )+
+  theme(
+    legend.title = element_text(size = 12),
+    legend.text = element_text(size = 12),
+    legend.box = "horizontal", legend.key.size = unit(2,"line")
+  )
+nw1
+
+nw2 <- nw1 +
+  geom_fruit(
+  geom=geom_star,
+  mapping=aes(fill=name),
+  starshape=26,
+  color=NA,
+  size=3,
+  starstroke=0,
+  offset=0.1,
+)+
+  
+#  geom_tiplab(aes(label=name,subset=grepl("_mo",name)),offset=.02,size=1.2) +
+  #geom_fruit(
+   # geom=geom_tile,
+    #mapping=aes(fill=name),
+    #size= 3, width=1.09,height=1,
+    #offset=0,
+  #)  +
+  scale_fill_manual(
+   name="Juvenile age (Months)",
+   values=c("black", "gray75", "#bd0026", "#74a9cf", "white"),
+   guide=guide_legend(
+     keywidth=0.3,
+     keyheight=0.3,
+     order=3,ncol=1
+   ),
+   na.translate=FALSE
+  )+
+  geom_text2(aes(label =SH_aLRT, subset= SH_aLRT>80), size = 1.2,  ##addint bootstrap support
+             color = "black",
+             hjust = -1, 
+             vjust = -1,check_overlap=TRUE)+
+  theme(
+    legend.title = element_text(size = 12),
+    legend.text = element_text(size = 12),
+     legend.key.size = unit(2,"line")
+  )
+nw2
+
+nw3 <- nw2 + 
+  new_scale_fill() +
+  geom_fruit(                                    #adding information about the lineage of the algae symbionts around the tree (circle)
+    geom=geom_tile,                              # this function is from ggtreeExtra pck 
+    mapping=aes(fill=Lineage),
+    width=0.025,
+    offset=0.1
+  ) +
+  scale_fill_manual(
+    name="Algal-symbiont",                             ### this is from the my sample data file 
+    # palette = "Set1",
+    values=c("C1"= '#c2e699',  "C27" = '#d7b5d8',
+             "C3"=  'gray75', "C3gulf"='#ffffcc', "Cladocopium sp."= '#004529',"C64"='#238443',"C7"= '#7a0177'),
+    guide=guide_legend(keywidth=0.5, keyheight=0.5, ncol=2, order=2)
+  )+ 
+  geom_treescale(fontsize=3, linesize=1.5, offset=.5) +
+  theme(
+    legend.position = "bottom",
+    legend.title = element_text(size = 12),
+    legend.text = element_text(size = 12),
+    legend.box = "horizontal", legend.key.size = unit(2,"line"))
+nw3
+
+  
+
+#EXPORT 
+
+#setwd("~/PhD/Konstanz Collaboration/Genomic data/psba/PhylogeneticTree/processed data")
+
+#
+#export
+#ggsave(plot=nw3, file="circ_tree_with_bootstrap.tiff", dpi= 600,width =35 , height = 25,units = "cm")
+
+```
+:::
